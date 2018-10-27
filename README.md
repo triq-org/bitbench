@@ -1,26 +1,29 @@
-# bitbench
+# BitBench
 
-## Project setup
-```
-yarn install
-```
+Visually dissect and analyze bit strings.
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
-```
+## Using the BitBench
 
-### Compiles and minifies for production
-```
-yarn run build
-```
+There is a hosted instance on http://triq.net/bitbench
 
-### Run your tests
-```
-yarn run test
-```
+## Status
 
-### Lints and fixes files
-```
-yarn run lint
-```
+This is a quick 1-day proof-of-concept.
+[Comments](/zuckschwerdt/bitbench/issues) and [Code](/zuckschwerdt/bitbench/pulls) very much welcome.
+
+## Development
+
+- Project setup
+  `yarn install`
+
+- Compiles and hot-reloads for development
+  `yarn run serve`
+
+- Compiles and minifies for production
+  `yarn run build`
+
+- Run your tests
+  `yarn run test`
+
+- Lints and fixes files
+  `yarn run lint`
