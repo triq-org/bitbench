@@ -189,6 +189,13 @@ export default class {
         reverse = false
         invert = false
         consumed = true
+      } else if (f == 'x') {
+        if (!size)
+          size = 1
+        shiftBits(bits, size)
+        reverse = false
+        invert = false
+        consumed = true
       } else {
         // or render plain char
         out += f

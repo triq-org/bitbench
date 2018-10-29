@@ -6,8 +6,13 @@
     </p>
     <textarea v-model="codes" placeholder="add lines of hex (no 0x prefix)"></textarea>
     <p>
-      Enter format string.
-      Use "h" for hex (default 4 bits), "b" for binary (default 1 bit), "d" for decimal (default 8 bits).<br/>
+      Enter format string:
+      <ul>
+        <li>"h" for hex (default 4 bits)</li>
+        <li>"b" for binary (default 1 bit)</li>
+        <li>"d" for decimal (default 8 bits)</li>
+        <li>"x" for don&apos;t care / don&apos;t output (default 1 bit)</li>
+      </ul>
       Use optional bit length prefix numbers.
       Use "~" to invert bits, use "^" to reverse LSB/MSB.
       Other characters are output as-is.<br/>
