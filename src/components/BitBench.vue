@@ -9,7 +9,8 @@
       Enter format string.
       Use "h" for hex (default 4 bits), "b" for binary (default 1 bit), "d" for decimal (default 8 bits).<br/>
       Use optional bit length prefix numbers.
-      Use "~" to invert bits, use "^" to reverse LSB/MSB.
+      Use "~" to invert bits, use "^" to reverse LSB/MSB, use "&gt;" and "&lt;" to<br/>
+      interpret multi-byte values as big-endian (default) or little-endian.
       Other characters are output as-is.<br/>
       <input type="text" v-model="fmt" size="80"/><br/>
       <a :href="url" @click.prevent="copyUrl">Link to this data and format</a>
