@@ -12,10 +12,17 @@ function trimBits(bits, size) {
     bits.fill(0, len - size)
 }
 
-function shiftBits(bits, size = 1, reverse = false, invert = false) {
+function shiftBits(bits, size = 1, reverse = false, reverseBytes = false, invert = false) {
   var b = bits.slice(0, size)
   if (reverse)
     b = b.reverse()
+  if (reverseBytes)
+    b = Array.prototype.concat.apply([], b.reduce((acc, cur, i) => {
+      if (!acc[i>>3])
+        acc[i>>3] = []
+      acc[i>>3].push(cur)
+      return acc
+    }, []).reverse())
   if (invert)
     for (var i = 0; i < size; ++i)
       b[i] = !b[i]
@@ -138,6 +145,7 @@ export default class {
     var bits = this.bits.slice()
     var fmts = fmt.split('')
     var reverse = false
+    var reverseBytes = false
     var invert = false
     var consumed = false
     while (bits.length) {
@@ -161,32 +169,40 @@ export default class {
         invert = !invert
       } else if (f == '^') {
         reverse = !reverse
+      } else if (f == '>') {
+        reverseBytes = false
+      } else if (f == '<') {
+        reverseBytes = true
       } else if (f == 'b') {
         if (!size)
           size = 1
-        out += formatBitsBin(shiftBits(bits, size, reverse, invert))
+        out += formatBitsBin(shiftBits(bits, size, reverse, reverseBytes, invert))
         reverse = false
+        reverseBytes = false
         invert = false
         consumed = true
       } else if (f == 'h') {
         if (!size)
           size = 4
-        out += '<span class="hex">' + formatBits(shiftBits(bits, size, reverse, invert), 16) + '</span>'
+        out += '<span class="hex">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 16) + '</span>'
         reverse = false
+        reverseBytes = false
         invert = false
         consumed = true
       } else if (f == 'd') {
         if (!size)
           size = 8
-        out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, invert), 10) + '</span>'
+        out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10) + '</span>'
         reverse = false
+        reverseBytes = false
         invert = false
         consumed = true
       } else if (f == 'r') {
         if (!size)
           size = 4
-        out += '<span class="hex">' + trChars(formatBits(shiftBits(bits, size, reverse, invert), 16)) + '</span>'
+        out += '<span class="hex">' + trChars(formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 16)) + '</span>'
         reverse = false
+        reverseBytes = false
         invert = false
         consumed = true
       } else {
