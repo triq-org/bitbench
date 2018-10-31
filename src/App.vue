@@ -1,10 +1,11 @@
 <template>
   <div id="app" :class="{dark: isDark}">
+    <button class="left" @click="verbose = !verbose">Toggle Help</button>
     <button class="right" @click="isDark = !isDark">Dark Mode / Light Mode</button>
     <a class="right" href="https://github.com/zuckschwerdt/bitbench">Github comments and code welcome</a>
     <h1>Welcome to BitBench</h1>
     <span>Visually dissect and analyze bit strings.</span>
-    <BitBench/>
+    <BitBench :verbose="verbose"/>
   </div>
 </template>
 
@@ -18,6 +19,7 @@ export default {
   },
   data: function () {
     return {
+      verbose: true,
       isDark: new Date().getHours() % 18 < 8 // 18:00 to 8:00 is night time
     }
   },
@@ -44,6 +46,10 @@ h1 {
   clear: both;
   margin: 0;
   padding: 0 0 .5em 0;
+}
+.left {
+  float: left;
+  margin-right: 2em;
 }
 .right {
   float: right;

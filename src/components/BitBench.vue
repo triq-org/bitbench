@@ -1,11 +1,12 @@
 <template>
   <div class="bench">
-    <p>
-      Enter hex code lines to analyze. Mixed 0b and 0x (optional) prefixes allowed.<br/>
-      Specify a bit length with {…} prefix, text in […] brackets is ignored as comment.
+    <p v-if="verbose">
+      Enter hex code lines to analyze.
+      Prefix 0b for dual, 0d for decimal, 0x for hex, 0o for octal, 0t for ternary (0,1,Z,X).<br/>
+      Specify a bit length with {…} prefix (pad/truncate right, left for decimal), text in […] brackets is ignored as comment.
     </p>
     <textarea v-model="codes" placeholder="add lines of hex (no 0x prefix)"></textarea>
-    <p>
+    <p v-if="verbose">
       Enter format string:
       <ul>
         <li>"h" for hex (default 4 bits)</li>
@@ -17,11 +18,13 @@
       Use "~" to invert bits, use "^" to reverse LSB/MSB, use "&gt;" and "&lt;" to<br/>
       interpret multi-byte values as big-endian (default) or little-endian.
       Other characters are output as-is.<br/>
+    </p>
+    <div>
       <input type="text" v-model="fmt" size="80"/><br/>
       <a :href="url" @click.prevent="copyUrl">Link to this data and format</a>
       <input class="vanish" :value="url"/> (Click copies to clipboard)
-    </p>
-    <ul>
+    </div>
+    <ul v-if="verbose">
       <li>E.g. <a @click="setFormat('hh ')">"hh "</a> or <a @click="setFormat('8h ')">"8h "</a> for byte-grouped hex output.</li>
       <li><a @click="setFormat('hhhh ')">"hhhh "</a> or <a @click="setFormat('16h ')">"16h "</a> for word-grouped hex output.</li>
       <li><a @click="setFormat('b')">"b"</a> for ungrouped binary output.</li>
@@ -29,11 +32,11 @@
       <li><a @click="setFormat('hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ')">"hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h "</a> e.g. for the example data.</li>
     </ul>
     <p>
-      Shift or invert all bits.<br/>
+      Shift or invert all bits.
       <button v-on:click="shift -= 1"><span>&lt;&lt;</span></button>
-      <label><input type="number" v-model="shift"></label>
+      <input type="number" v-model="shift">
       <button v-on:click="shift += 1"><span>&gt;&gt;</span></button>
-      <button v-on:click="invert = !invert" :class="{'active': invert}"><span>~</span></button><br/>
+      <button v-on:click="invert = !invert" :class="{'active': invert}"><span>~</span></button>
       Pad Left and Pad Right below.<br/>
     </p>
     <div id="code-lines">
@@ -51,6 +54,9 @@ export default {
   name: 'BitBench',
   components: {
     BitBox
+  },
+  props: {
+    verbose: Boolean,
   },
   data: function () {
     return {
@@ -165,6 +171,14 @@ button.active {
 }
 .box.even {
   background: rgba(0,0,0,0.1);
+}
+.box button, .box input {
+    visibility: hidden;
+}
+.box:hover button, .box:hover input,
+.box:active button, .box:active input,
+.box button.active, .box input.active {
+    visibility: visible;
 }
 input {
   padding: 5px 0.5em;
