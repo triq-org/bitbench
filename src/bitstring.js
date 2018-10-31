@@ -100,10 +100,16 @@ function trChars(text) {
   return text.split('').map((c) => tr[parseInt(c, 16)]).join('')
 }
 
+function strToComments(text) {
+  var comments = text.match(/\[.+?\]/g) || []
+  return comments.join()
+}
+
 export default class {
   constructor(arg) {
     this.code = arg
     this.bits = this.strToBits(arg)
+    this.comments = strToComments(arg)
   }
 
   strToBits(text) {
@@ -117,7 +123,7 @@ export default class {
         // skip
       } else if (c == '[') {
         // skip comment
-        while (c != ']')
+        while (text.length && c != ']')
           c = text.shift()
       } else if (c == '0' && text[0] == 'x') {
         base = 16 // hexadecimal

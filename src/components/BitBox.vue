@@ -4,15 +4,17 @@
     <input type="number" :class="{ active: !!padLeft }" v-model="padLeft">
     <button v-on:click="padLeft += 1"><span>&gt;&gt;</span></button>
 
-    <button v-on:click="padRight -= 1"><span>&lt;&lt;</span></button>
-    <input type="number" :class="{ active: !!padRight }" v-model="padRight">
-    <button v-on:click="padRight += 1"><span>&gt;&gt;</span></button>
-
     <button v-on:click="localInvert = !localInvert" :class="{'active': localInvert}"><span>~</span></button>
 
     <div class="bit-rows">
       <div class="bits" v-for="bits in bitsText" :key="bits" v-html="bits"/>
     </div>
+
+    <button v-on:click="padRight -= 1"><span>&lt;&lt;</span></button>
+    <input type="number" :class="{ active: !!padRight }" v-model="padRight">
+    <button v-on:click="padRight += 1"><span>&gt;&gt;</span></button>
+
+    <span class="comments" v-if="comments" v-html="commentText"/>
   </div>
 </template>
 
@@ -26,6 +28,7 @@ export default {
     fmts: String,
     shift: Number,
     invert: Boolean,
+    comments: Boolean,
   },
   data: function () {
     return {
@@ -47,6 +50,9 @@ export default {
           .padRight(this.padRight)
           .toFormat(fmt)
         )
+    },
+    commentText: function () {
+      return (new BitString(this.code)).comments
     },
   },
 }

@@ -38,12 +38,13 @@
       <input type="number" v-model="shift">
       <button v-on:click="shift += 1"><span>&gt;&gt;</span></button>
       <button v-on:click="invert = !invert" :class="{'active': invert}"><span>~</span></button>
+      <button v-on:click="comments = !comments" :class="{'active': comments}"><span>C</span></button>
       Pad Left and Pad Right below.<br/>
     </p>
     <div class="code-lines">
       <BitBox v-for="(code, index) in codeLines" :key="code.index"
         :class="{'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
-        :code="code.val" :shift="shift" :invert="invert" :fmts="fmts"/>
+        :code="code.val" :shift="shift" :invert="invert" :fmts="fmts" :comments="comments"/>
     </div>
   </div>
 </template>
@@ -70,9 +71,10 @@ export default {
 30 44 92 13 3e 0e 65 07 45 04 5f
 30 44 92 15 3d 07 5f 07 45 04 5f
 30 c3 81 d6 5b 90 35 08 35 44 2c`,
-      shift: 0,
       fmts: 'hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ',
+      shift: 0,
       invert: false,
+      comments: false,
     }
   },
   created() {
@@ -174,7 +176,6 @@ button.active {
 } 
 .bench .code-lines {
   width: 100%;
-  text-align: center;
 }
 .box {
   background: rgba(0,0,0,0.05);
@@ -234,5 +235,8 @@ input.vanish {
 .bits .dec {
   color: #444;
   background: #ccf;
+}
+.comments {
+  margin-left: 1em;
 }
 </style>
