@@ -10,7 +10,9 @@
 
     <button v-on:click="localInvert = !localInvert" :class="{'active': localInvert}"><span>~</span></button>
 
-    <span class="bits" v-html="bitsText"></span>
+    <div class="bit-rows">
+      <div class="bits" v-for="bits in bitsText" :key="bits" v-html="bits"/>
+    </div>
   </div>
 </template>
 
@@ -21,7 +23,7 @@ export default {
   name: 'BitBox',
   props: {
     code: String,
-    fmt: String,
+    fmts: String,
     shift: Number,
     invert: Boolean,
   },
@@ -34,13 +36,17 @@ export default {
   },
   computed: {
     bitsText: function () {
-      return new BitString(this.code)
-      .invert(this.invert)
-      .invert(this.localInvert)
-      .shiftRight(this.shift)
-      .padLeft(this.padLeft)
-      .padRight(this.padRight)
-      .toFormat(this.fmt)
+      return this.fmts
+        .split('\n')
+        .map((fmt) => 
+          new BitString(this.code)
+          .invert(this.invert)
+          .invert(this.localInvert)
+          .shiftRight(this.shift)
+          .padLeft(this.padLeft)
+          .padRight(this.padRight)
+          .toFormat(fmt)
+        )
     },
   },
 }

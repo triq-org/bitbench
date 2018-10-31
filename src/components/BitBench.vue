@@ -5,9 +5,9 @@
       Prefix 0b for dual, 0d for decimal, 0x for hex, 0o for octal, 0t for ternary (0,1,Z,X).<br/>
       Specify a bit length with {…} prefix (pad/truncate right, left for decimal), text in […] brackets is ignored as comment.
     </p>
-    <textarea v-model="codes" placeholder="add lines of hex (no 0x prefix)"></textarea>
+    <textarea class="codes" v-model="codes" placeholder="add lines of hex (no 0x prefix)"></textarea>
     <p v-if="verbose">
-      Enter format string:
+      Enter format string (each line is one decode):
       <ul>
         <li>"h" for hex (default 4 bits)</li>
         <li>"b" for binary (default 1 bit)</li>
@@ -19,8 +19,8 @@
       interpret multi-byte values as big-endian (default) or little-endian.
       Other characters are output as-is.<br/>
     </p>
+    <textarea class="fmts" v-model="fmts" placeholder="enter format lines"></textarea>
     <div>
-      <input type="text" v-model="fmt" size="80"/><br/>
       <a :href="url" @click.prevent="copyUrl">Link to this data and format</a>
       <input class="vanish" :value="url"/> (Click copies to clipboard)
     </div>
@@ -29,6 +29,7 @@
       <li><a @click="setFormat('hhhh ')">"hhhh "</a> or <a @click="setFormat('16h ')">"16h "</a> for word-grouped hex output.</li>
       <li><a @click="setFormat('b')">"b"</a> for ungrouped binary output.</li>
       <li><a @click="setFormat('4b 4b | ')">"4b 4b | "</a> for nibble and byte-grouped binary output.</li>
+      <li><a @click="setFormat('8b \n..... 8h \n.... 8d ')">"8b \n 8h \n 8d "</a> for bit, hex, and dec outputs.</li>
       <li><a @click="setFormat('hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ')">"hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h "</a> e.g. for the example data.</li>
     </ul>
     <p>
@@ -39,10 +40,10 @@
       <button v-on:click="invert = !invert" :class="{'active': invert}"><span>~</span></button>
       Pad Left and Pad Right below.<br/>
     </p>
-    <div id="code-lines">
+    <div class="code-lines">
       <BitBox v-for="(code, index) in codeLines" :key="code.index"
         :class="{'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
-        :code="code.val" :shift="shift" :invert="invert" :fmt="fmt"/>
+        :code="code.val" :shift="shift" :invert="invert" :fmts="fmts"/>
     </div>
   </div>
 </template>
@@ -70,7 +71,7 @@ export default {
 30 44 92 15 3d 07 5f 07 45 04 5f
 30 c3 81 d6 5b 90 35 08 35 44 2c`,
       shift: 0,
-      fmt: 'hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ',
+      fmts: 'hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ',
       invert: false,
     }
   },
@@ -82,7 +83,7 @@ export default {
     if (paramCodes)
       this.codes = paramCodes
     if (paramFmt)
-      this.fmt = paramFmt
+      this.fmts = paramFmt
   },
   updated() {
   },
@@ -97,13 +98,13 @@ export default {
         this.codes.trim().split('\n')
           .map((el) => "c=" + encodeURIComponent(el) )
           .join('&') +
-        "&f=" + encodeURIComponent(this.fmt)
+        "&f=" + encodeURIComponent(this.fmts)
       return u.href
     },
   },
   methods: {
     setFormat(fmt) {
-      this.fmt = fmt
+      this.fmts = fmt
     },
     copyUrl(event) {
       var copyEl = event.target.nextSibling
@@ -141,6 +142,12 @@ textarea {
   padding: 1em 2em;
   color: #44f;
 }
+textarea.codes {
+  height: 250px;
+}
+textarea.fmts {
+  height: 100px;
+}
 .dark textarea, .dark input[type=text] {
   border: none;
   color: #6c6;
@@ -165,7 +172,10 @@ button.active {
   color: #444;
   background: #0c0;
 } 
-
+.bench .code-lines {
+  width: 100%;
+  text-align: center;
+}
 .box {
   background: rgba(0,0,0,0.05);
 }
@@ -198,11 +208,15 @@ input.vanish {
   width: 0;
   padding: 0;
 }
+.bit-rows {
+  display: inline-block;
+}
 .bits {
   color:#aaa;
+  letter-spacing: 1px;
 }
 .bits span, .bits b, .bits i {
-  padding: 3px 1px;
+  padding: 1px 0;
   border-radius: 2px;
 }
 .bits i {
