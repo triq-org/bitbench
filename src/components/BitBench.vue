@@ -10,7 +10,7 @@
       Specify a bit length with <b>{</b>…<b>}</b> prefix (pad/truncate right, left for decimal),
       text in <b>[</b>…<b>]</b> brackets is ignored as comment.
     </p>
-    <textarea class="codes" v-model="codes" placeholder="add lines of hex, [comments], y z x o t to switch base"></textarea>
+    <textarea class="codes" v-model="codes" @keyup="textareaSelect" @mouseup="textareaSelect" placeholder="add lines of hex, [comments], y z x o t to switch base"></textarea>
     <p v-if="verbose">
       Enter format string (each line is one decode):
       <ul>
@@ -49,7 +49,7 @@
     </p>
     <div class="code-lines">
       <BitBox v-for="(code, index) in codeLines" :key="code.index"
-        :class="{'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
+        :class="{'cursor': index === cursor, 'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
         :code="code.val" :shift="shift" :invert="invert" :fmts="fmts" :comments="comments"/>
     </div>
   </div>
@@ -81,13 +81,14 @@ export default {
       shift: 0,
       invert: false,
       comments: false,
+      cursor: -1,
     }
   },
   created() {
     let uri = window.location.search.substring(1)
     let params = new URLSearchParams(uri);
-    let paramCodes = params.getAll("c").join('\n')
-    let paramFmt = params.get("f")
+    let paramCodes = params.getAll('c').join('\n')
+    let paramFmt = params.get('f')
     if (paramCodes)
       this.codes = paramCodes
     if (paramFmt)
@@ -102,15 +103,19 @@ export default {
     },
     url: function () {
       var u = new URL(window.location)
-      u.search = "?" +
+      u.search = '?' +
         this.codes.trim().split('\n')
-          .map((el) => "c=" + encodeURIComponent(el) )
+          .map((el) => 'c=' + encodeURIComponent(el) )
           .join('&') +
-        "&f=" + encodeURIComponent(this.fmts)
+        '&f=' + encodeURIComponent(this.fmts)
       return u.href
     },
   },
   methods: {
+    textareaSelect(event) {
+      var textarea = event.target
+      this.cursor = textarea.value.substr(0, textarea.selectionStart).split('\n').length - 1
+    },
     setFormat(fmt) {
       this.fmts = fmt
     },
@@ -188,6 +193,9 @@ button.active {
 }
 .box.even {
   background: rgba(0,0,0,0.1);
+}
+.box.cursor {
+  background: rgba(153,255,153,0.2);
 }
 .box button, .box input {
     visibility: hidden;
