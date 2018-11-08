@@ -240,7 +240,17 @@ input.vanish {
 }
 .bits .dec {
   color: #444;
-  background: #ccf;
+  background: #cff;
+}
+.bits .chr {
+  color: #444;
+  background: #8cf;
+}
+.bits .chr .ctrl {
+  background: #f88;
+}
+.bits .chr .inv {
+  color: #fff;
 }
 .comments {
   margin-left: 1em;

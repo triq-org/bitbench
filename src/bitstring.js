@@ -92,8 +92,14 @@ function formatBitsChar(bits, base = 16) {
   var pad = Math.ceil(bits.length / Math.log2(base))
   while (bits.length)
     num = (num << 1) + bits.shift()
-  if (base == 256) {
-    return String.fromCharCode(num); // special case ascii
+  if (base == 256) { // special case ascii
+    var inv = num >= 128
+    num %= 128
+    var ctrl = (num < 32 || num == 127)
+    if (ctrl)
+      num = (num + 64) % 128
+    var cls = (ctrl ? 'ctrl' : '') + (inv ? ' inv' : '')
+    return `<span class="${cls}">${ctrl ? '^' : ''}${String.fromCharCode(num)}</span>`
   }
   return num.toString(base).padStart(pad, '0')
 }
