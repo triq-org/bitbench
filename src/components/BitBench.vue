@@ -2,10 +2,15 @@
   <div class="bench">
     <p v-if="verbose">
       Enter hex code lines to analyze.
-      Prefix 0b for dual, 0d for decimal, 0x for hex, 0o for octal, 0t for ternary (0,1,Z,X).<br/>
-      Specify a bit length with {…} prefix (pad/truncate right, left for decimal), text in […] brackets is ignored as comment.
+      Prefix 0<b>y</b> for <b>dual</b>,
+      0<b>z</b> for <b>decimal</b>,
+      0<b>x</b> for <b>hex</b>,
+      0<b>o</b> for <b>octal</b>,
+      0<b>t</b> for <b>ternary</b> (0,1,Z,X).<br/>
+      Specify a bit length with <b>{</b>…<b>}</b> prefix (pad/truncate right, left for decimal),
+      text in <b>[</b>…<b>]</b> brackets is ignored as comment.
     </p>
-    <textarea class="codes" v-model="codes" placeholder="add lines of hex (no 0x prefix)"></textarea>
+    <textarea class="codes" v-model="codes" placeholder="add lines of hex, [comments], y z x o t to switch base"></textarea>
     <p v-if="verbose">
       Enter format string (each line is one decode):
       <ul>

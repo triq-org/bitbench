@@ -125,10 +125,11 @@ export default class {
         // skip comment
         while (text.length && c != ']')
           c = text.shift()
+
       } else if (c == '0' && text[0] == 'x') {
         base = 16 // hexadecimal
         text.shift()
-      } else if (c == '0' && text[0] == 'd') {
+      } else if (c == '0' && text[0] == 'z') {
         base = 10 // decimal
         text.shift()
       } else if (c == '0' && text[0] == 'o') {
@@ -137,9 +138,21 @@ export default class {
       } else if (c == '0' && text[0] == 't') {
         base = 4 // tristate (2-bit: 0,1,Z,X)
         text.shift()
-      } else if (c == '0' && text[0] == 'b') {
+      } else if (c == '0' && text[0] == 'y') {
         base = 2 // dual
         text.shift()
+
+      } else if (c == 'x') {
+        base = 16 // hexadecimal
+      } else if (c == 'z') {
+        base = 10 // decimal
+      } else if (c == 'o') {
+        base = 8 // octal
+      } else if (c == 't') {
+        base = 4 // tristate (2-bit: 0,1,Z,X)
+      } else if (c == 'y') {
+        base = 2 // dual
+
       } else if (c == '{') {
         if (size > 0)
           trimBitsRight(bits, size)
