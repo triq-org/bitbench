@@ -92,6 +92,9 @@ function formatBitsChar(bits, base = 16) {
   var pad = Math.ceil(bits.length / Math.log2(base))
   while (bits.length)
     num = (num << 1) + bits.shift()
+  if (base == 256) {
+    return String.fromCharCode(num); // special case ascii
+  }
   return num.toString(base).padStart(pad, '0')
 }
 
@@ -285,6 +288,14 @@ export default class {
         if (!size)
           size = 8
         out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10) + '</span>'
+        reverse = false
+        reverseBytes = false
+        invert = false
+        consumed = true
+      } else if (f == 'c') {
+        if (!size)
+          size = 8
+        out += '<span class="chr">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 256) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false

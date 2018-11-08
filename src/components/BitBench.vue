@@ -17,10 +17,11 @@
         <li>"h" for hex (default 4 bits)</li>
         <li>"b" for binary (default 1 bit)</li>
         <li>"d" for decimal (default 8 bits)</li>
+        <li>"c" for ascii character (default 8 bits)</li>
         <li>"x" for don&apos;t care / don&apos;t output (default 1 bit)</li>
       </ul>
       Use optional bit length prefix numbers.
-      Use "~" to invert bits, use "^" to reverse LSB/MSB, use "&gt;" and "&lt;" to<br/>
+      Use "<b>~</b>" to invert bits, use "<b>^</b>" to reverse LSB/MSB, use "<b>&gt;</b>" and "<b>&lt;</b>" to<br/>
       interpret multi-byte values as big-endian (default) or little-endian.
       Other characters are output as-is.<br/>
     </p>
