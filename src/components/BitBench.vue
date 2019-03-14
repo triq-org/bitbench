@@ -80,7 +80,7 @@ export default {
       fmts: 'hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ',
       shift: 0,
       invert: false,
-      comments: false,
+      comments: true,
       cursor: -1,
     }
   },
