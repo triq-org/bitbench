@@ -150,11 +150,26 @@ textarea {
   width: 100%;
   height: 250px;
   border: none;
-  border-top: 1px solid #999;
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid #DDD;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.39), 0 -1px 1px rgba(255,255,255,0.5), 0 1px 0 rgba(255,255,255,0.5);
   padding: 1em 2em;
   color: #44f;
 }
+.dark textarea {
+  border-bottom: none;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 -1px 1px rgba(0,0,0,0.1), 0 1px 0 rgba(0,0,0,0.5);
+}
+
+input.perfect-inset {
+  height: 34px;
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  border-top: none;
+  border-bottom: 1px solid #DDD;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.39), 0 -1px 1px #FFF, 0 1px 0 #FFF;
+}
+
 textarea.codes {
   height: 250px;
 }
@@ -208,7 +223,14 @@ button.active {
 input {
   padding: 5px 0.5em;
   border: none;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid #DDD;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.39), 0 -1px 1px rgba(255,255,255,0.5), 0 1px 0 rgba(255,255,255,0.5);
   text-align: center;
+}
+.dark input {
+  border-bottom: none;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 -1px 1px rgba(0,0,0,0.1), 0 1px 0 rgba(0,0,0,0.2);
 }
 input[type=text] {
   color: #44f;
