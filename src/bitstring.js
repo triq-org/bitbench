@@ -88,7 +88,7 @@ function formatBits(bits, base = 16) {
 
 // note: it's unsafe to output more than 32 bits in one call
 function formatBitsChar(bits, base = 16) {
-  var num = 0;
+  var num = 0
   var pad = Math.ceil(bits.length / Math.log2(base))
   while (bits.length)
     num = (num << 1) + bits.shift()
@@ -114,12 +114,38 @@ function strToComments(text) {
   return comments.join()
 }
 
+function arrCompare(a, b, begin = 0, end = -1) {
+  for (var i = begin; i < end; i += 1) {
+    if (a[i] < b[i])
+      return -1
+    else if (a[i] > b[i])
+      return 1
+  }
+  return 0
+}
+
 export default class {
   constructor(arg) {
-    this.code = arg
-    this.bits = this.strToBits(arg)
-    this.comments = strToComments(arg)
+    if (typeof arg == 'string' || arg instanceof String) {
+      this.code = arg
+      this.error = false
+      this.bits = this.strToBits(arg)
+      this.comments = strToComments(arg)
+    } else {
+      this.code = arg.code
+      this.error = arg.error
+      this.bits = arg.bits.slice()
+      this.comments = arg.comments
+    }
   }
+
+  copy() {
+    var dup = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this))
+    dup.bits = dup.bits.slice() // deep copy
+    return dup
+  }
+
+  // parser
 
   strToBits(text) {
     var bits = []
@@ -197,6 +223,8 @@ export default class {
     return bits
   }
 
+  // simple ops
+
   invert(boolInvert=true) {
     var len = this.bits.length
     if (boolInvert)
@@ -236,6 +264,78 @@ export default class {
       this.bits.push(0)
     return this
   }
+
+  // transform ops
+
+  matchPreamble(match) {
+    if (match && match.bits.length > 0) {
+      var matchLen = match.bits.length
+      while (this.bits.length > 0 && arrCompare(this.bits, match.bits, 0, matchLen))
+        this.bits.shift()
+      for (var i = match.bits.length; this.bits.length > 0 && i > 0; i -= 1)
+        this.bits.shift()
+    }
+    return this
+  }
+
+  matchSync(match) {
+    if (match && match.bits.length > 0) {
+      var matchLen = match.bits.length
+      while (this.bits.length > 0 && arrCompare(this.bits, match.bits, 0, matchLen))
+        this.bits.shift()
+    }
+    return this
+  }
+
+  decodeMC() {
+    var ret = []
+    for (var i = 0; i + 1 < this.bits.length; i += 2) {
+      if (this.bits[i] > this.bits[i + 1])
+        ret.push(1)
+      else if (this.bits[i] < this.bits[i + 1])
+        ret.push(0)
+      else {
+        this.error += 1
+        break
+      }
+    }
+    this.bits = ret
+    return this
+  }
+
+  decodeMCI() {
+    var ret = []
+    for (var i = 0; i + 1 < this.bits.length; i += 2) {
+      if (this.bits[i] < this.bits[i + 1])
+        ret.push(1)
+      else if (this.bits[i] > this.bits[i + 1])
+        ret.push(0)
+      else {
+        this.error += 1
+        break
+      }
+    }
+    this.bits = ret
+    return this
+  }
+
+  decodeDMC() {
+    var ret = []
+    for (var i = 0; i + 1 < this.bits.length; i += 2) {
+      if (this.bits[i] == this.bits[i + 1])
+        ret.push(1)
+      else
+        ret.push(0)
+      if (i + 1 < this.bits.length && this.bits[i + 1] == this.bits[i + 2]) {
+        this.error += 1
+        break
+      }
+    }
+    this.bits = ret
+    return this
+  }
+
+  // output
 
   toHex() {
     return this.toFormat('8h ')

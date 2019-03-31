@@ -1,10 +1,10 @@
 <template>
-  <div class="box">
+  <div class="box" :class="{'error': codeBits.error}">
     <button v-on:click="padLeft -= 1"><span>&lt;&lt;</span></button>
     <input type="number" :class="{ active: !!padLeft }" v-model="padLeft">
     <button v-on:click="padLeft += 1"><span>&gt;&gt;</span></button>
 
-    <button v-on:click="localInvert = !localInvert" :class="{'active': localInvert}"><span>~</span></button>
+    <button v-on:click="invert = !invert" :class="{'active': invert}"><span>~</span></button>
 
     <div class="bit-rows">
       <div class="bits" v-for="bits in bitsText" :key="bits" v-html="bits"/>
@@ -25,34 +25,34 @@ export default {
   name: 'BitBox',
   props: {
     code: String,
+    bits: Object,
     fmts: String,
-    shift: Number,
-    invert: Boolean,
     comments: Boolean,
   },
   data: function () {
     return {
       padLeft: 0,
       padRight: 0,
-      localInvert: false,
+      invert: false,
     }
   },
   computed: {
+    codeBits: function () {
+      return this.bits ? this.bits : new BitString(this.code)
+    },
     bitsText: function () {
       return this.fmts
         .split('\n')
-        .map((fmt) => 
-          new BitString(this.code)
+        .map((fmt) =>
+          this.codeBits
           .invert(this.invert)
-          .invert(this.localInvert)
-          .shiftRight(this.shift)
           .padLeft(this.padLeft)
           .padRight(this.padRight)
           .toFormat(fmt)
         )
     },
     commentText: function () {
-      return (new BitString(this.code)).comments
+      return (this.codeBits).comments
     },
   },
 }

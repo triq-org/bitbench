@@ -64,7 +64,6 @@ a {
 }
 .dark h1 {
   color: #5af;
-  background: rgba(255,255,255,0.05);
 }
 .dark a {
   color: #5af;
