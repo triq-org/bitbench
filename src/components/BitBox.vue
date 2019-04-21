@@ -45,6 +45,7 @@ export default {
         .split('\n')
         .map((fmt) =>
           this.codeBits
+          .copy()
           .invert(this.invert)
           .padLeft(this.padLeft)
           .padRight(this.padRight)
