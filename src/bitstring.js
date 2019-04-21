@@ -61,6 +61,23 @@ function formatBitsBin(bits) {
     .join('')
 }
 
+function formatBitsPop(bits, width = 1) {
+  return chunkRight(bits, width)
+    .map((b) => formatNumHeat(b.reduce((acc, cur) => acc + cur), width))
+    .join('')
+}
+
+function formatBitsValue(bits, width = 1) {
+  return chunkRight(bits, width)
+    .map((b) => formatNumHeat(parseInt(b.join(''), 2), 2**width - 1))
+    .join('')
+}
+
+function formatNumHeat(num, maxNum = 1) {
+  num = ~~(num * 24 / maxNum);
+  return `<em class="h${num}">█</em>`
+}
+
 // break every chunkSize elements, right align (the first chunk may have less elements)
 function chunkRight(ary, chunkSize = 8) {
   var chunks = []
@@ -378,6 +395,22 @@ export default class {
         if (!size)
           size = 1
         out += formatBitsBin(shiftBits(bits, size, reverse, reverseBytes, invert))
+        reverse = false
+        reverseBytes = false
+        invert = false
+        consumed = true
+      } else if (f == 'p') { // population count as heatmap
+        if (!size)
+          size = 1
+        out += formatBitsPop(shiftBits(bits, size, reverse, reverseBytes, invert), size)
+        reverse = false
+        reverseBytes = false
+        invert = false
+        consumed = true
+      } else if (f == 'v') { // value as heatmap
+        if (!size)
+          size = 1
+        out += formatBitsValue(shiftBits(bits, size, reverse, reverseBytes, invert), size)
         reverse = false
         reverseBytes = false
         invert = false

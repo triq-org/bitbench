@@ -450,4 +450,33 @@ input.vanish {
 .comments {
   margin-left: 1em;
 }
+/* heat map */
+.bits em {
+  color:transparent;
+}
+.bits .h0  { color: #3500FF; }
+.bits .h1  { color: #4700FF; }
+.bits .h2  { color: #5800FF; }
+.bits .h3  { color: #6A00FF; }
+.bits .h4  { color: #7C00FF; }
+.bits .h5  { color: #8D00FF; }
+.bits .h6  { color: #9F00FF; }
+.bits .h7  { color: #B000FF; }
+.bits .h8  { color: #C200FF; }
+.bits .h9  { color: #D400FF; }
+.bits .h10 { color: #E500FF; }
+.bits .h11 { color: #F700FF; }
+.bits .h12 { color: #FF00F6; }
+.bits .h13 { color: #FF00E4; }
+.bits .h14 { color: #FF00D3; }
+.bits .h15 { color: #FF00C1; }
+.bits .h16 { color: #FF00AF; }
+.bits .h17 { color: #FF009E; }
+.bits .h18 { color: #FF008C; }
+.bits .h19 { color: #FF007B; }
+.bits .h20 { color: #FF0069; }
+.bits .h21 { color: #FF0057; }
+.bits .h22 { color: #FF0046; }
+.bits .h23 { color: #FF0034; }
+.bits .h24 { color: #FF0023; }
 </style>
