@@ -1,7 +1,7 @@
 <template>
   <div class="box" :class="{'error': codeBits.error}">
     <button v-on:click="padLeft -= 1"><span>&lt;&lt;</span></button>
-    <input type="number" :class="{ active: !!padLeft }" v-model="padLeft">
+    <input type="number" :class="{ active: !!padLeft }" v-model.number="padLeft">
     <button v-on:click="padLeft += 1"><span>&gt;&gt;</span></button>
 
     <button v-on:click="invert = !invert" :class="{'active': invert}"><span>~</span></button>
@@ -11,7 +11,7 @@
     </div>
 
     <button v-on:click="padRight -= 1"><span>&lt;&lt;</span></button>
-    <input type="number" :class="{ active: !!padRight }" v-model="padRight">
+    <input type="number" :class="{ active: !!padRight }" v-model.number="padRight">
     <button v-on:click="padRight += 1"><span>&gt;&gt;</span></button>
 
     <span class="comments" v-if="comments" v-html="commentText"/>

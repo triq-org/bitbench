@@ -39,7 +39,7 @@
     <p>
       Shift
       <button @click="shift -= 1"><span>&lt;&lt;</span></button>
-      <input type="number" v-model="shift">
+      <input type="number" v-model.number="shift">
       <button @click="shift += 1"><span>&gt;&gt;</span></button>
       <span class="v-space"></span>
       Invert
