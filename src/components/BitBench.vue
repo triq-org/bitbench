@@ -72,6 +72,37 @@
   </section>
 
   <section class="bench">
+    <p>
+      Calculation
+      <button @click="toggleCalcFunc('')" :class="{'active': calcFunc==''}"><span>None</span></button>
+      <button @click="toggleCalcFunc('ADD')" :class="{'active': calcFunc=='ADD'}"><span>ADD</span></button>
+      <button @click="toggleCalcFunc('XOR')" :class="{'active': calcFunc=='XOR'}"><span>XOR</span></button>
+
+      <span class="v-space"></span>
+      Offset
+      <button @click="calcOffset -= 1"><span>&lt;</span></button>
+      <input type="number" v-model.number="calcOffset">
+      <button @click="calcOffset += 1"><span>&gt;</span></button>
+
+      Length
+      <button @click="calcLength -= 1"><span>&lt;</span></button>
+      <input type="number" v-model.number="calcLength">
+      <button @click="calcLength += 1"><span>&gt;</span></button>
+
+      Width
+      <button @click="calcWidth -= 1"><span>&lt;</span></button>
+      <input type="number" v-model.number="calcWidth">
+      <button @click="calcWidth += 1"><span>&gt;</span></button>
+
+      <span class="v-space"></span>
+      Show
+      <button @click="toggleCalcShow(16)" :class="{'active': calcShow==16}"><span>Hex</span></button>
+      <button @click="toggleCalcShow(10)" :class="{'active': calcShow==10}"><span>Dec</span></button>
+      <button @click="toggleCalcShow(2)"  :class="{'active': calcShow==2}"><span>Bin</span></button>
+    </p>
+  </section>
+
+  <section class="bench">
     <p v-if="verbose">
       Enter format string (each line is one decode).
       <b>h</b> hex (4 bits)
@@ -115,7 +146,9 @@
     <div class="code-lines">
       <BitBox v-for="(code, index) in codesWithCoding" :key="code.index"
         :class="{'cursor': index === cursor, 'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
-        :bits="code.bits" :fmts="fmts" :comments="comments"/>
+        :bits="code.bits" :fmts="fmts" :comments="comments"
+        :calcFunc="calcFunc" :calcOffset="calcOffset" :calcLength="calcLength" :calcWidth="calcWidth" :calcShow="calcShow"
+      />
     </div>
   </section>
   </div>
@@ -152,6 +185,11 @@ export default {
       showShift: false,
       coding: false,
       showCoding: false,
+      calcFunc: '',
+      calcOffset: 0,
+      calcLength: 0,
+      calcWidth: 4,
+      calcShow: 16,
       fmts: 'hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ',
       comments: true,
       cursor: -1,
@@ -253,6 +291,12 @@ export default {
     },
     toggleCoding(coding) {
       this.coding = this.coding == coding ? false : coding;
+    },
+    toggleCalcFunc(calcFunc) {
+      this.calcFunc = this.calcFunc == calcFunc ? '' : calcFunc;
+    },
+    toggleCalcShow(calcShow) {
+      this.calcShow = this.calcShow == calcShow ? 0 : calcShow;
     },
     setFormat(fmt) {
       this.fmts = fmt

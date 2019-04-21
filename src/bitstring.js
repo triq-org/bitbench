@@ -282,6 +282,48 @@ export default class {
     return this
   }
 
+  // summary functions
+
+  sumAdd(offset = 0, length = 0, width = 4) {
+    if (width <= 0)
+      return 0
+    if (offset < 0)
+      offset = this.bits.length + offset
+    if (length <= 0)
+      length = this.bits.length + length
+
+    var sum = 0
+    for (var i = offset; i < offset + length - width + 1;) {
+      var end = i + width
+      var n = 0
+      for (; i < end; ++i) {
+        n = n * 2 + this.bits[i]
+      }
+      sum += n
+    }
+    return sum
+  }
+
+  sumXor(offset = 0, length = 0, width = 4) {
+    if (width <= 0)
+      return 0
+    if (offset < 0)
+      offset = this.bits.length + offset
+    if (length <= 0)
+      length = this.bits.length + length
+
+    var sum = 0
+    for (var i = offset; i < offset + length - width + 1;) {
+      var end = i + width
+      var n = 0
+      for (; i < end; ++i) {
+        n = n * 2 + this.bits[i]
+      }
+      sum ^= n
+    }
+    return sum
+  }
+
   // transform ops
 
   matchPreamble(match) {
