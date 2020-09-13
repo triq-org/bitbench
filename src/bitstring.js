@@ -250,6 +250,17 @@ export default class {
     return this
   }
 
+  xor(xorText = '') {
+    if (xorText) {
+      const xbits = this.strToBits(xorText)
+      var xlen = xbits.length
+      var len = this.bits.length
+      for (var i = 0; i < len; ++i)
+        this.bits[i] ^= xbits[i % xlen]
+    }
+    return this
+  }
+
   shiftLeft(shiftAmount=1) {
     for (; shiftAmount < 0; ++shiftAmount)
       this.bits.unshift(0)

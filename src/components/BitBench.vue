@@ -45,6 +45,9 @@
       Invert
       <button @click="invert = !invert" :class="{'active': invert}"><span>~</span></button>
       <span class="v-space"></span>
+      Xor
+      <input type="text" size="4" v-model="xor">
+      <span class="v-space"></span>
       <button @click="showShift = !showShift" :class="{'active': showShift}"><span>Show</span></button>
     </p>
     <div v-if="align && showShift" class="code-lines">
@@ -182,6 +185,7 @@ export default {
       showAlign: false,
       shift: 0,
       invert: false,
+      xor: '',
       showShift: false,
       coding: false,
       showCoding: false,
@@ -206,6 +210,7 @@ export default {
     let paramMatch = params.get('m')
     let paramShift = params.get('s')
     let paramInvert = params.get('i')
+    let paramXor = params.get('x')
     let paramCoding = params.get('d')
     if (paramCodes)
       this.codes = paramCodes
@@ -219,6 +224,8 @@ export default {
       this.shift = paramShift
     if (paramInvert)
       this.invert = paramInvert
+    if (paramXor)
+      this.xor = paramXor
     if (paramCoding)
       this.coding = paramCoding
   },
@@ -249,6 +256,7 @@ export default {
         .map((el, index) => { return {index: index, bits: el.bits.copy()
           .invert(this.invert)
           .shiftRight(this.shift)
+          .xor(this.xor)
         } })
     },
     codesWithCoding: function () {
@@ -277,6 +285,7 @@ export default {
         (this.align ? '&m=' + encodeURIComponent(this.match) : '') +
         (this.shift ? '&s=' + encodeURIComponent(this.shift) : '') +
         (this.invert ? '&i=' + encodeURIComponent(this.invert) : '') +
+        (this.xor ? '&x=' + encodeURIComponent(this.xor) : '') +
         (this.coding ? '&d=' + encodeURIComponent(this.coding) : '')
       return u.href
     },
