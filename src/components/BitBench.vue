@@ -212,6 +212,10 @@ export default {
     let paramInvert = params.get('i')
     let paramXor = params.get('x')
     let paramCoding = params.get('d')
+    let paramCalcFunc = params.get('cf')
+    let paramCalcOffset = params.get('co')
+    let paramCalcLength = params.get('cl')
+    let paramCalcWidth = params.get('cw')
     if (paramCodes)
       this.codes = paramCodes
     if (paramFmt)
@@ -221,13 +225,21 @@ export default {
     if (paramMatch)
       this.match = paramMatch
     if (paramShift)
-      this.shift = paramShift
+      this.shift = parseInt(paramShift, 10)
     if (paramInvert)
       this.invert = paramInvert
     if (paramXor)
       this.xor = paramXor
     if (paramCoding)
       this.coding = paramCoding
+    if (paramCalcFunc)
+      this.calcFunc = paramCalcFunc
+    if (paramCalcOffset)
+      this.calcOffset = parseInt(paramCalcOffset, 10)
+    if (paramCalcLength)
+      this.calcLength = parseInt(paramCalcLength, 10)
+    if (paramCalcWidth)
+      this.calcWidth = parseInt(paramCalcWidth, 10)
   },
   updated() {
   },
@@ -286,7 +298,11 @@ export default {
         (this.shift ? '&s=' + encodeURIComponent(this.shift) : '') +
         (this.invert ? '&i=' + encodeURIComponent(this.invert) : '') +
         (this.xor ? '&x=' + encodeURIComponent(this.xor) : '') +
-        (this.coding ? '&d=' + encodeURIComponent(this.coding) : '')
+        (this.coding ? '&d=' + encodeURIComponent(this.coding) : '') +
+        (this.calcFunc ? '&cf=' + encodeURIComponent(this.calcFunc) : '') +
+        (this.calcOffset ? '&co=' + encodeURIComponent(this.calcOffset) : '') +
+        (this.calcLength ? '&cl=' + encodeURIComponent(this.calcLength) : '') +
+        (this.calcWidth ? '&cw=' + encodeURIComponent(this.calcWidth) : '')
       return u.href
     },
   },
