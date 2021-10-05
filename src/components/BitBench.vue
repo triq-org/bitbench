@@ -48,9 +48,12 @@
       Xor
       <input type="text" size="4" v-model="xor">
       <span class="v-space"></span>
+      Reflect
+      <button @click="reflect = !reflect" :class="{'active': reflect}"><span>^</span></button>
+      <span class="v-space"></span>
       <button @click="showShift = !showShift" :class="{'active': showShift}"><span>Show</span></button>
     </p>
-    <div v-if="align && showShift" class="code-lines">
+    <div v-if="showShift" class="code-lines">
       <BitBox v-for="(code, index) in codesWithShiftInvert" :key="code.index"
         :class="{'cursor': index === cursor, 'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
         :bits="code.bits" fmts="8h " :comments="comments"/>
@@ -186,6 +189,7 @@ export default {
       shift: 0,
       invert: false,
       xor: '',
+      reflect: false,
       showShift: false,
       coding: false,
       showCoding: false,
@@ -211,6 +215,7 @@ export default {
     let paramShift = params.get('s')
     let paramInvert = params.get('i')
     let paramXor = params.get('x')
+    let paramReflect = params.get('r')
     let paramCoding = params.get('d')
     let paramCalcFunc = params.get('cf')
     let paramCalcOffset = params.get('co')
@@ -230,6 +235,8 @@ export default {
       this.invert = paramInvert
     if (paramXor)
       this.xor = paramXor
+    if (paramReflect)
+      this.reflect = paramReflect
     if (paramCoding)
       this.coding = paramCoding
     if (paramCalcFunc)
@@ -266,9 +273,10 @@ export default {
       var codes = this.codesWithAlign
       return codes
         .map((el, index) => { return {index: index, bits: el.bits.copy()
-          .invert(this.invert)
           .shiftRight(this.shift)
+          .invert(this.invert)
           .xor(this.xor)
+          .reflect(this.reflect)
         } })
     },
     codesWithCoding: function () {
@@ -298,6 +306,7 @@ export default {
         (this.shift ? '&s=' + encodeURIComponent(this.shift) : '') +
         (this.invert ? '&i=' + encodeURIComponent(this.invert) : '') +
         (this.xor ? '&x=' + encodeURIComponent(this.xor) : '') +
+        (this.reflect ? '&r=' + encodeURIComponent(this.reflect) : '') +
         (this.coding ? '&d=' + encodeURIComponent(this.coding) : '') +
         (this.calcFunc ? '&cf=' + encodeURIComponent(this.calcFunc) : '') +
         (this.calcOffset ? '&co=' + encodeURIComponent(this.calcOffset) : '') +

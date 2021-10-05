@@ -261,6 +261,23 @@ export default class {
     return this
   }
 
+  reflect(boolReflect = true) {
+    var len = this.bits.length
+    if (boolReflect)
+      for (var i = 0; i < len; i += 8) {
+        var byte = this.bits.slice(i, i + 8)
+        this.bits[i + 0] = byte[7]
+        this.bits[i + 1] = byte[6]
+        this.bits[i + 2] = byte[5]
+        this.bits[i + 3] = byte[4]
+        this.bits[i + 4] = byte[3]
+        this.bits[i + 5] = byte[2]
+        this.bits[i + 6] = byte[1]
+        this.bits[i + 7] = byte[0]
+      }
+    return this
+  }
+
   shiftLeft(shiftAmount=1) {
     for (; shiftAmount < 0; ++shiftAmount)
       this.bits.unshift(0)
