@@ -206,7 +206,7 @@ export default {
     }
   },
   created() {
-    let uri = window.location.search.substring(1)
+    let uri = window.location.search.substring(1) || window.location.hash.substring(1)
     let params = new URLSearchParams(uri);
     let paramCodes = params.getAll('c').join('\n')
     let paramFmt = params.get('f')
@@ -296,7 +296,7 @@ export default {
     },
     url: function () {
       var u = new URL(window.location)
-      u.search = '?' +
+      u.hash = '#' +
         this.codes.trim().split('\n')
           .map((el) => 'c=' + encodeURIComponent(el) )
           .join('&') +
@@ -485,7 +485,8 @@ input[type=number] {
   background: rgba(0,0,0,0.05);
 }
 input.vanish {
-  width: 0;
+  width: 1px;
+  transform: translate(-100vw);
   padding: 0;
 }
 .bit-rows {
