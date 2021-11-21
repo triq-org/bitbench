@@ -354,10 +354,11 @@ export default {
   display: flex;
   flex-flow: column;
   align-items: center;
-  background: linear-gradient(rgba(0,0,0,0.03), transparent 40px);
+  border-top: 1px solid #f0f0f0;
 }
 .dark .bench {
-  background: linear-gradient(rgba(0,0,0,0.1), transparent 40px);
+  background: rgba(255,255,255,0.1);
+  border-top: 1px solid #222;
 }
 .bench > div, .bench > p, .bench ul {
  text-align: left;
@@ -398,7 +399,7 @@ textarea.fmts {
 }
 .dark textarea, .dark input[type=text] {
   border: none;
-  color: #6c6;
+  color: #9b4;
   background: #222;
 }
 .dark button {
@@ -422,17 +423,17 @@ button.small,
 }
 button.active {
   color: #444;
-  background: #0c0;
+  background: #9d0;
 }
 button:hover, button:active {
   color: #444;
-  background: #0a0;
+  background: #e43;
 }
 .dark button.active {
-  background: #5af;
+  background: #9b4;
 }
 .dark button:hover, .dark button:active {
-  background: #38d;
+  background: #e43;
 }
 .bench .code-lines {
   width: 100%;
@@ -475,6 +476,7 @@ input.small,
 .dark input {
   border-bottom: none;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 -1px 1px rgba(0,0,0,0.1), 0 1px 0 rgba(0,0,0,0.2);
+  color: #9b4;
 }
 input[type=text] {
   color: #44f;
