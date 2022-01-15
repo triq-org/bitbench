@@ -20,8 +20,15 @@ export default {
   data: function () {
     return {
       verbose: true,
-      isDark: new Date().getHours() % 18 < 8 // 18:00 to 8:00 is night time
+      isDark: window.matchMedia
+        && window.matchMedia('(prefers-color-scheme: dark)').matches
+        || new Date().getHours() % 18 < 8 /* 18:00 to 8:00 is night time */
     }
+  },
+  created () {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+      this.isDark = event.matches
+    })
   },
 }
 </script>
