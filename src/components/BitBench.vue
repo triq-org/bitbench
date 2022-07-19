@@ -163,21 +163,17 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import BitString from '../bitstring'
 import BitBox from './BitBox.vue'
 
-export default {
-  name: 'BitBench',
-  components: {
-    BitBox
-  },
-  props: {
-    verbose: Boolean,
-  },
-  data: function () {
-    return {
-      codes: `30 c3 81 d5 5c 2a cf 08 35 44 2c
+import { ref, computed } from 'vue'
+
+defineProps({
+  verbose: Boolean,
+})
+
+const codes = ref(`30 c3 81 d5 5c 2a cf 08 35 44 2c
 30 35 c2 2f 3c 0f a1 07 52 29 9f
 30 35 c2 2e 3c fb 8c 07 52 29 9f
 30 c9 a2 1e 40 0c 05 07 34 c6 b1
@@ -185,177 +181,173 @@ export default {
 30 c9 a2 1f 40 f8 f2 07 34 c6 b1
 30 44 92 13 3e 0e 65 07 45 04 5f
 30 44 92 15 3d 07 5f 07 45 04 5f
-30 c3 81 d6 5b 90 35 08 35 44 2c`,
-      align: false,
-      match: '',
-      showAlign: false,
-      shift: 0,
-      invert: false,
-      xor: '',
-      reflect: false,
-      showShift: false,
-      coding: false,
-      xor2: '',
-      showCoding: false,
-      calcFunc: '',
-      calcOffset: 0,
-      calcLength: 0,
-      calcWidth: 4,
-      calcShow: 16,
-      fmts: 'hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ',
-      comments: true,
-      cursor: -1,
-      helpFormat: false,
-      helpExamples: false,
-    }
-  },
-  created() {
-    let uri = window.location.search.substring(1) || window.location.hash.substring(1)
-    let params = new URLSearchParams(uri);
-    let paramCodes = params.getAll('c').join('\n')
-    let paramFmt = params.get('f')
-    let paramAlign = params.get('a')
-    let paramMatch = params.get('m')
-    let paramShift = params.get('s')
-    let paramInvert = params.get('i')
-    let paramXor = params.get('x')
-    let paramReflect = params.get('r')
-    let paramCoding = params.get('d')
-    let paramXor2 = params.get('x2')
-    let paramCalcFunc = params.get('cf')
-    let paramCalcOffset = params.get('co')
-    let paramCalcLength = params.get('cl')
-    let paramCalcWidth = params.get('cw')
-    if (paramCodes)
-      this.codes = paramCodes
-    if (paramFmt)
-      this.fmts = paramFmt
-    if (paramAlign)
-      this.align = paramAlign
-    if (paramMatch)
-      this.match = paramMatch
-    if (paramShift)
-      this.shift = parseInt(paramShift, 10)
-    if (paramInvert)
-      this.invert = paramInvert
-    if (paramXor)
-      this.xor = paramXor
-    if (paramReflect)
-      this.reflect = paramReflect
-    if (paramCoding)
-      this.coding = paramCoding
-    if (paramXor2)
-      this.xor2 = paramXor2
-    if (paramCalcFunc)
-      this.calcFunc = paramCalcFunc
-    if (paramCalcOffset)
-      this.calcOffset = parseInt(paramCalcOffset, 10)
-    if (paramCalcLength)
-      this.calcLength = parseInt(paramCalcLength, 10)
-    if (paramCalcWidth)
-      this.calcWidth = parseInt(paramCalcWidth, 10)
-  },
-  updated() {
-  },
-  computed: {
-    codeLines: function () {
-      return this.codes.trim().split('\n')
-        .map((el, index) => { return {index: index, bits: new BitString(el) } })
+30 c3 81 d6 5b 90 35 08 35 44 2c`)
+const align = ref(false)
+const match = ref('')
+const showAlign = ref(false)
+const shift = ref(0)
+const invert = ref(false)
+const xor = ref('')
+const reflect = ref(false)
+const showShift = ref(false)
+const coding = ref(false)
+const xor2 = ref('')
+const showCoding = ref(false)
+const calcFunc = ref('')
+const calcOffset = ref(0)
+const calcLength = ref(0)
+const calcWidth = ref(4)
+const calcShow = ref(16)
+const fmts = ref('hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ')
+const comments = ref(true)
+const cursor = ref(-1)
+const helpFormat = ref(false)
+const helpExamples = ref(false)
 
-    },
-    codesWithAlign: function () {
-      var codes = this.codeLines
-      var match = new BitString(this.match)
-      if (this.align == 'Preamble') {
-        return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().matchPreamble(match) } })
-      } else if (this.align == 'Sync') {
-        return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().matchSync(match)} })
-      } else {
-        return codes
-      }
-    },
-    codesWithShiftInvert: function () {
-      var codes = this.codesWithAlign
-      return codes
-        .map((el, index) => { return {index: index, bits: el.bits.copy()
-          .shiftRight(this.shift)
-          .invert(this.invert)
-          .xor(this.xor)
-          .reflect(this.reflect)
-        } })
-    },
-    codesWithCoding: function () {
-      var codes = this.codesWithShiftInvert
-      if (this.coding == 'MC') {
-        return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMC().xor(this.xor2)} })
-      } else if (this.coding == 'MCI') {
-        return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMCI().xor(this.xor2)} })
-      } else if (this.coding == 'DMC') {
-        return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeDMC().xor(this.xor2)} })
-      } else {
-        return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().xor(this.xor2)} })
-      }
-    },
-    url: function () {
-      var u = new URL(window.location)
-      u.hash = '#' +
-        this.codes.trim().split('\n')
-          .map((el) => 'c=' + encodeURIComponent(el) )
-          .join('&') +
-        '&f=' + encodeURIComponent(this.fmts) +
-        (this.align ? '&a=' + encodeURIComponent(this.align) : '') +
-        (this.align ? '&m=' + encodeURIComponent(this.match) : '') +
-        (this.shift ? '&s=' + encodeURIComponent(this.shift) : '') +
-        (this.invert ? '&i=' + encodeURIComponent(this.invert) : '') +
-        (this.xor ? '&x=' + encodeURIComponent(this.xor) : '') +
-        (this.reflect ? '&r=' + encodeURIComponent(this.reflect) : '') +
-        (this.coding ? '&d=' + encodeURIComponent(this.coding) : '') +
-        (this.xor2 ? '&x2=' + encodeURIComponent(this.xor2) : '') +
-        (this.calcFunc ? '&cf=' + encodeURIComponent(this.calcFunc) : '') +
-        (this.calcOffset ? '&co=' + encodeURIComponent(this.calcOffset) : '') +
-        (this.calcLength ? '&cl=' + encodeURIComponent(this.calcLength) : '') +
-        (this.calcWidth ? '&cw=' + encodeURIComponent(this.calcWidth) : '')
-      return u.href
-    },
-  },
-  methods: {
-    textareaSelect(event) {
-      var textarea = event.target
-      this.cursor = textarea.value.substr(0, textarea.selectionStart).split('\n').length - 1
-    },
-    toggleAlign(align) {
-      this.align = this.align == align ? false : align;
-    },
-    toggleCoding(coding) {
-      this.coding = this.coding == coding ? false : coding;
-    },
-    toggleCalcFunc(calcFunc) {
-      this.calcFunc = this.calcFunc == calcFunc ? '' : calcFunc;
-    },
-    toggleCalcShow(calcShow) {
-      this.calcShow = this.calcShow == calcShow ? 0 : calcShow;
-    },
-    setFormat(fmt) {
-      this.fmts = fmt
-    },
-    copyUrl(event) {
-      var copyEl = event.target.nextSibling
-      copyEl.focus()
-      copyEl.select()
-      try {
-        document.execCommand('copy');
-      } catch (err) {
-        // ignore
-      }
-    },
+let uri = window.location.search.substring(1) || window.location.hash.substring(1)
+let params = new URLSearchParams(uri);
+let paramCodes = params.getAll('c').join('\n')
+let paramFmt = params.get('f')
+let paramAlign = params.get('a')
+let paramMatch = params.get('m')
+let paramShift = params.get('s')
+let paramInvert = params.get('i')
+let paramXor = params.get('x')
+let paramReflect = params.get('r')
+let paramCoding = params.get('d')
+let paramXor2 = params.get('x2')
+let paramCalcFunc = params.get('cf')
+let paramCalcOffset = params.get('co')
+let paramCalcLength = params.get('cl')
+let paramCalcWidth = params.get('cw')
+if (paramCodes)
+  codes.value = paramCodes
+if (paramFmt)
+  fmts.value = paramFmt
+if (paramAlign)
+  align.value = paramAlign
+if (paramMatch)
+  match.value = paramMatch
+if (paramShift)
+  shift.value = parseInt(paramShift, 10)
+if (paramInvert)
+  invert.value = paramInvert
+if (paramXor)
+  xor.value = paramXor
+if (paramReflect)
+  reflect.value = paramReflect
+if (paramCoding)
+  coding.value = paramCoding
+if (paramXor2)
+  xor2.value = paramXor2
+if (paramCalcFunc)
+  calcFunc.value = paramCalcFunc
+if (paramCalcOffset)
+  calcOffset.value = parseInt(paramCalcOffset, 10)
+if (paramCalcLength)
+  calcLength.value = parseInt(paramCalcLength, 10)
+if (paramCalcWidth)
+  calcWidth.value = parseInt(paramCalcWidth, 10)
+
+const codeLines = computed(() =>
+  codes.value.trim().split('\n')
+    .map((el, index) => { return {index: index, bits: new BitString(el) } })
+)
+
+const codesWithAlign = computed(() => {
+  const codes = codeLines.value
+  let matchBits = new BitString(match.value)
+  if (align.value == 'Preamble') {
+    return codes
+      .map((el, index) => { return {index: index, bits: el.bits.copy().matchPreamble(matchBits) } })
+  } else if (align.value == 'Sync') {
+    return codes
+      .map((el, index) => { return {index: index, bits: el.bits.copy().matchSync(matchBits)} })
+  } else {
+    return codes
+  }
+})
+
+const codesWithShiftInvert = computed(() => {
+  const codes = codesWithAlign.value
+  return codes
+    .map((el, index) => { return {index: index, bits: el.bits.copy()
+      .shiftRight(shift.value)
+      .invert(invert.value)
+      .xor(xor.value)
+      .reflect(reflect.value)
+    } })
+})
+
+const codesWithCoding = computed(() => {
+  const codes = codesWithShiftInvert.value
+  if (coding.value == 'MC') {
+    return codes
+      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMC().xor(xor2.value)} })
+  } else if (coding.value == 'MCI') {
+    return codes
+      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMCI().xor(xor2.value)} })
+  } else if (coding.value == 'DMC') {
+    return codes
+      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeDMC().xor(xor2.value)} })
+  } else {
+    return codes
+      .map((el, index) => { return {index: index, bits: el.bits.copy().xor(xor2.value)} })
+  }
+})
+
+const url = computed(() => {
+  const u = new URL(window.location)
+  u.hash = '#' +
+    codes.value.trim().split('\n')
+      .map((el) => 'c=' + encodeURIComponent(el) )
+      .join('&') +
+    '&f=' + encodeURIComponent(fmts.value) +
+    (align.value ? '&a=' + encodeURIComponent(align.value) : '') +
+    (align.value ? '&m=' + encodeURIComponent(match.value) : '') +
+    (shift.value ? '&s=' + encodeURIComponent(shift.value) : '') +
+    (invert.value ? '&i=' + encodeURIComponent(invert.value) : '') +
+    (xor.value ? '&x=' + encodeURIComponent(xor.value) : '') +
+    (reflect.value ? '&r=' + encodeURIComponent(reflect.value) : '') +
+    (coding.value ? '&d=' + encodeURIComponent(coding.value) : '') +
+    (xor2.value ? '&x2=' + encodeURIComponent(xor2.value) : '') +
+    (calcFunc.value ? '&cf=' + encodeURIComponent(calcFunc.value) : '') +
+    (calcOffset.value ? '&co=' + encodeURIComponent(calcOffset.value) : '') +
+    (calcLength.value ? '&cl=' + encodeURIComponent(calcLength.value) : '') +
+    (calcWidth.value ? '&cw=' + encodeURIComponent(calcWidth.value) : '')
+  return u.href
+})
+
+function textareaSelect(event) {
+  const textarea = event.target
+  cursor.value = textarea.value.substr(0, textarea.selectionStart).split('\n').length - 1
+}
+function toggleAlign(newAlign) {
+  align.value = align.value == newAlign ? false : newAlign;
+}
+function toggleCoding(newCoding) {
+  coding.value = coding.value == newCoding ? false : newCoding;
+}
+function toggleCalcFunc(newCalcFunc) {
+  calcFunc.value = calcFunc.value == newCalcFunc ? '' : newCalcFunc;
+}
+function toggleCalcShow(newCalcShow) {
+  calcShow.value = calcShow.value == newCalcShow ? 0 : newCalcShow;
+}
+function setFormat(newFmt) {
+  fmts.value = newFmt
+}
+function copyUrl(event) {
+  const copyEl = event.target.nextSibling
+  copyEl.focus()
+  copyEl.select()
+  try {
+    document.execCommand('copy');
+  } catch (err) {
+    // ignore
   }
 }
+
 </script>
 
 <style>

@@ -9,28 +9,21 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import BitBench from './components/BitBench.vue'
 
-export default {
-  name: 'app',
-  components: {
-    BitBench
-  },
-  data: function () {
-    return {
-      verbose: true,
-      isDark: window.matchMedia
-        && window.matchMedia('(prefers-color-scheme: dark)').matches
-        || new Date().getHours() % 18 < 8 /* 18:00 to 8:00 is night time */
-    }
-  },
-  created () {
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-      this.isDark = event.matches
-    })
-  },
-}
+import { ref } from 'vue'
+
+const verbose = ref(true)
+const isDark = ref(
+  window.matchMedia
+    && window.matchMedia('(prefers-color-scheme: dark)').matches
+    || new Date().getHours() % 18 < 8 /* 18:00 to 8:00 is night time */
+)
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+  isDark.value = event.matches
+})
 </script>
 
 <style>

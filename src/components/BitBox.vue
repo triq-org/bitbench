@@ -20,56 +20,55 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import BitString from '../bitstring'
 
-export default {
-  name: 'BitBox',
-  props: {
-    code: String,
-    bits: Object,
-    fmts: String,
-    calcFunc: String,
-    calcOffset: Number,
-    calcLength: Number,
-    calcWidth: Number,
-    calcShow: Number,
-    comments: Boolean,
-  },
-  data: function () {
-    return {
-      padLeft: 0,
-      padRight: 0,
-      invert: false,
-    }
-  },
-  computed: {
-    codeBits: function () {
-      return this.bits ? this.bits : new BitString(this.code)
-    },
-    bitsText: function () {
-      return this.fmts
-        .split('\n')
-        .map((fmt) =>
-          this.codeBits
-          .copy()
-          .invert(this.invert)
-          .padLeft(this.padLeft)
-          .padRight(this.padRight)
-          .toFormat(fmt)
-        )
-    },
-    calcText: function () {
-      var result = 0
-      if (this.calcFunc == 'ADD')
-        result = this.codeBits.sumAdd(this.calcOffset, this.calcLength, this.calcWidth)
-      else if (this.calcFunc == 'XOR')
-        result = this.codeBits.sumXor(this.calcOffset, this.calcLength, this.calcWidth)
-      return '= ' + result.toString(this.calcShow)
-    },
-    commentText: function () {
-      return (this.codeBits).comments
-    },
-  },
-}
+import { ref, computed } from 'vue'
+
+const props = defineProps({
+  code: String,
+  bits: Object,
+  fmts: String,
+  calcFunc: String,
+  calcOffset: Number,
+  calcLength: Number,
+  calcWidth: Number,
+  calcShow: Number,
+  comments: Boolean,
+})
+
+const padLeft = ref(0)
+const padRight = ref(0)
+const invert = ref(false)
+
+const codeBits = computed(() =>
+  props.bits ? props.bits : new BitString(props.code)
+)
+
+const bitsText = computed(() =>
+  props.fmts
+    .split('\n')
+    .map((fmt) =>
+      codeBits.value
+      .copy()
+      .invert(invert.value)
+      .padLeft(padLeft.value)
+      .padRight(padRight.value)
+      .toFormat(fmt)
+    )
+)
+
+const calcText = computed(() => {
+  var result = 0
+  if (props.calcFunc == 'ADD')
+    result = codeBits.value.sumAdd(props.calcOffset, props.calcLength, props.calcWidth)
+  else if (props.calcFunc == 'XOR')
+    result = codeBits.value.sumXor(props.calcOffset, props.calcLength, props.calcWidth)
+  return '= ' + result.toString(props.calcShow)
+})
+
+const commentText = computed(() =>
+  (codeBits.value).comments
+)
+
 </script>
