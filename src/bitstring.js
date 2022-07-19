@@ -252,8 +252,17 @@ export default class {
 
   xor(xorText = '') {
     if (xorText) {
-      const xbits = this.strToBits(xorText)
+      var xbits = this.strToBits(xorText)
       var xlen = xbits.length
+
+      // hidden mode: if mask is all 0 then take mask from start of data
+      var n = 0
+      for (var j = 0; j < xlen; ++j) {
+        n = n * 2 + xbits[j]
+      }
+      if (n == 0)
+        xbits = this.bits.slice(0, xbits.length)
+
       var len = this.bits.length
       for (var i = 0; i < len; ++i)
         this.bits[i] ^= xbits[i % xlen]

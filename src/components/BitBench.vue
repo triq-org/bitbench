@@ -68,6 +68,9 @@
       <button @click="toggleCoding('MCI')" :class="{'active': coding=='MCI'}"><span>Manchester (IEEE 802.3)</span></button>
       <button @click="toggleCoding('DMC')" :class="{'active': coding=='DMC'}"><span>Differential Manchester</span></button>
       <span class="v-space"></span>
+      Xor
+      <input type="text" size="4" v-model="xor2">
+      <span class="v-space"></span>
       <button @click="showCoding = !showCoding" :class="{'active': showCoding}"><span>Show</span></button>
     </p>
     <div v-if="coding && showCoding" class="code-lines">
@@ -192,6 +195,7 @@ export default {
       reflect: false,
       showShift: false,
       coding: false,
+      xor2: '',
       showCoding: false,
       calcFunc: '',
       calcOffset: 0,
@@ -217,6 +221,7 @@ export default {
     let paramXor = params.get('x')
     let paramReflect = params.get('r')
     let paramCoding = params.get('d')
+    let paramXor2 = params.get('x2')
     let paramCalcFunc = params.get('cf')
     let paramCalcOffset = params.get('co')
     let paramCalcLength = params.get('cl')
@@ -239,6 +244,8 @@ export default {
       this.reflect = paramReflect
     if (paramCoding)
       this.coding = paramCoding
+    if (paramXor2)
+      this.xor2 = paramXor2
     if (paramCalcFunc)
       this.calcFunc = paramCalcFunc
     if (paramCalcOffset)
@@ -283,15 +290,16 @@ export default {
       var codes = this.codesWithShiftInvert
       if (this.coding == 'MC') {
         return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMC()} })
+          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMC().xor(this.xor2)} })
       } else if (this.coding == 'MCI') {
         return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMCI()} })
+          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMCI().xor(this.xor2)} })
       } else if (this.coding == 'DMC') {
         return codes
-          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeDMC()} })
+          .map((el, index) => { return {index: index, bits: el.bits.copy().decodeDMC().xor(this.xor2)} })
       } else {
         return codes
+          .map((el, index) => { return {index: index, bits: el.bits.copy().xor(this.xor2)} })
       }
     },
     url: function () {
@@ -308,6 +316,7 @@ export default {
         (this.xor ? '&x=' + encodeURIComponent(this.xor) : '') +
         (this.reflect ? '&r=' + encodeURIComponent(this.reflect) : '') +
         (this.coding ? '&d=' + encodeURIComponent(this.coding) : '') +
+        (this.xor2 ? '&x2=' + encodeURIComponent(this.xor2) : '') +
         (this.calcFunc ? '&cf=' + encodeURIComponent(this.calcFunc) : '') +
         (this.calcOffset ? '&co=' + encodeURIComponent(this.calcOffset) : '') +
         (this.calcLength ? '&cl=' + encodeURIComponent(this.calcLength) : '') +
