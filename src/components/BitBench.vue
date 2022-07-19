@@ -164,7 +164,7 @@
 </template>
 
 <script setup>
-import BitString from '../bitstring'
+import BitString from '../bitstring.js'
 import BitBox from './BitBox.vue'
 
 import { ref, computed } from 'vue'

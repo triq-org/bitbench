@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import BitString from '../bitstring'
+import BitString from '../bitstring.js'
 
 import { ref, computed } from 'vue'
 
