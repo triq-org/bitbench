@@ -452,7 +452,7 @@ button:hover, button:active {
   background: rgba(255,0,0,0.1);
 }
 .box.cursor {
-  background: rgba(153,255,153,0.2);
+  background: rgba(153,204,153,0.5);
 }
 .box button, .box input {
     visibility: hidden;

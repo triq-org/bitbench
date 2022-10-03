@@ -103,19 +103,26 @@ function formatBits(bits, base = 16) {
   }
 }
 
-// note: it's unsafe to output more than 32 bits in one call
+// note: using multiplication by 2 instead of left-shift which is limited to signed 32 bit
 function formatBitsChar(bits, base = 16) {
-  var num = 0
-  var pad = Math.ceil(bits.length / Math.log2(base))
+  const pad = Math.ceil(bits.length / Math.log2(base))
+  if (bits.length > 52) {
+    // maximum safe integer primitive is 52 bits, use BigInt for wider numbers
+    let num = BigInt(0)
+    while (bits.length)
+      num = (num * BigInt(2)) + BigInt(bits.shift())
+    return num.toString(base).padStart(pad, '0')
+  }
+  let num = 0
   while (bits.length)
-    num = (num << 1) + bits.shift()
+    num = (num * 2) + bits.shift()
   if (base == 256) { // special case ascii
-    var inv = num >= 128
+    const inv = num >= 128
     num %= 128
-    var ctrl = (num < 32 || num == 127)
+    const ctrl = (num < 32 || num == 127)
     if (ctrl)
       num = (num + 64) % 128
-    var cls = (ctrl ? 'ctrl' : '') + (inv ? ' inv' : '')
+    const cls = (ctrl ? 'ctrl' : '') + (inv ? ' inv' : '')
     return `<span class="${cls}">${ctrl ? '^' : ''}${String.fromCharCode(num)}</span>`
   }
   return num.toString(base).padStart(pad, '0')
