@@ -92,19 +92,22 @@ function chunkRight(ary, chunkSize = 8) {
 }
 
 // format all bits, right aligned, char by char if possible
-function formatBits(bits, base = 16) {
+// signed (2's complement) is only available for base 10 format and only up 32 bits
+function formatBits(bits, base = 16, signed = false) {
   var width = Math.log2(base)
   if (Math.ceil(width) == width) {
     // integral bit width
     return chunkRight(bits, width).map((b) => formatBitsChar(b, base)).join('')
   } else {
     // hope for the best otherwise
-    return formatBitsChar(bits, base)
+    return formatBitsChar(bits, base, signed)
   }
 }
 
 // note: using multiplication by 2 instead of left-shift which is limited to signed 32 bit
-function formatBitsChar(bits, base = 16) {
+// signed (2's complement) is only available for base 10 format and only up 32 bits
+function formatBitsChar(bits, base = 16, signed = false) {
+  const width = bits.length
   const pad = Math.ceil(bits.length / Math.log2(base))
   if (bits.length > 52) {
     // maximum safe integer primitive is 52 bits, use BigInt for wider numbers
@@ -124,6 +127,12 @@ function formatBitsChar(bits, base = 16) {
       num = (num + 64) % 128
     const cls = (ctrl ? 'ctrl' : '') + (inv ? ' inv' : '')
     return `<span class="${cls}">${ctrl ? '^' : ''}${String.fromCharCode(num)}</span>`
+  }
+  if (signed && width <= 32) {
+    const shift_amount = 32 - width
+    num = (num << shift_amount) >> shift_amount
+    // pad with spaces and one extra char for the minus sign
+    return num.toString(base).padStart(pad + 1, '\xa0') // Non-breaking space is char 0xa0 (160 dec)
   }
   return num.toString(base).padStart(pad, '0')
 }
@@ -512,7 +521,15 @@ export default class {
       } else if (f == 'd') {
         if (!size)
           size = 8
-        out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10) + '</span>'
+        out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10, false) + '</span>'
+        reverse = false
+        reverseBytes = false
+        invert = false
+        consumed = true
+      } else if (f == 's') {
+        if (!size)
+          size = 8
+        out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10, true) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false

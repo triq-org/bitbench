@@ -117,6 +117,7 @@
       <b>h</b> hex (4 bits)
       <b>b</b> binary (1 bit)
       <b>d</b> decimal (8 bits)
+      <b>s</b> signed decimal (8 bits)
       <b>c</b> ascii character (8 bits)
       <b>x</b> skip (1 bit)
       <br>
