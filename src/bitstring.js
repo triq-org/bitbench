@@ -55,6 +55,33 @@ function shiftBits(bits, size = 1, reverse = false, reverseBytes = false, invert
   return b
 }
 
+// Shifts a number out of bits.
+// Requesting more than 52 bit returns a BigInt.
+// Signed (2's complement) is only available up 32 bits.
+// Note: using multiplication by 2 instead of left-shift which is limited to signed 32 bit
+function shiftNum(bits, size = 0, signed = false) {
+  const width = Math.min(size || bits.length, bits.length)
+  if (width > 52) {
+    // maximum safe integer primitive is 52 bits, use BigInt for wider numbers
+    let num = BigInt(0)
+    for (let i = 0; i < width; i +=1) {
+      num = (num * BigInt(2)) + BigInt(bits.shift())
+    }
+    return num
+
+  } else {
+    let num = 0
+    for (let i = 0; i < width; i +=1) {
+        num = (num * 2) + bits.shift()
+    }
+    if (signed && width <= 32) {
+      const shift_amount = 32 - width
+      num = (num << shift_amount) >> shift_amount
+    }
+    return num
+  }
+}
+
 function formatBitsBin(bits) {
   return bits
     .map((bit) => bit ? '<b>1</b>' : '<i>0</i>')
@@ -91,6 +118,27 @@ function chunkRight(ary, chunkSize = 8) {
   return chunks
 }
 
+// format 32 or 64 bits, to float
+function formatBitsFloat(bits) {
+  const width = bits.length
+  if (width != 32 && width != 64) {
+    return 'NaF'
+  }
+  const buf = new ArrayBuffer(8)
+  const view = new DataView(buf)
+
+  for (let i = 0; i < width / 8; i += 1) {
+    const num = shiftNum(bits, 8)
+    view.setUint8(i, num)
+  }
+
+  if (width == 32) {
+    return view.getFloat32(0).toString()
+  } else {
+    return view.getFloat64(0).toString()
+  }
+}
+
 // format all bits, right aligned, char by char if possible
 // signed (2's complement) is only available for base 10 format and only up 32 bits
 function formatBits(bits, base = 16, signed = false) {
@@ -107,18 +155,8 @@ function formatBits(bits, base = 16, signed = false) {
 // note: using multiplication by 2 instead of left-shift which is limited to signed 32 bit
 // signed (2's complement) is only available for base 10 format and only up 32 bits
 function formatBitsChar(bits, base = 16, signed = false) {
-  const width = bits.length
   const pad = Math.ceil(bits.length / Math.log2(base))
-  if (bits.length > 52) {
-    // maximum safe integer primitive is 52 bits, use BigInt for wider numbers
-    let num = BigInt(0)
-    while (bits.length)
-      num = (num * BigInt(2)) + BigInt(bits.shift())
-    return num.toString(base).padStart(pad, '0')
-  }
-  let num = 0
-  while (bits.length)
-    num = (num * 2) + bits.shift()
+  let num = shiftNum(bits, bits.length, signed)
   if (base == 256) { // special case ascii
     const inv = num >= 128
     num %= 128
@@ -128,9 +166,7 @@ function formatBitsChar(bits, base = 16, signed = false) {
     const cls = (ctrl ? 'ctrl' : '') + (inv ? ' inv' : '')
     return `<span class="${cls}">${ctrl ? '^' : ''}${String.fromCharCode(num)}</span>`
   }
-  if (signed && width <= 32) {
-    const shift_amount = 32 - width
-    num = (num << shift_amount) >> shift_amount
+  if (signed) {
     // pad with spaces and one extra char for the minus sign
     return num.toString(base).padStart(pad + 1, '\xa0') // Non-breaking space is char 0xa0 (160 dec)
   }
@@ -530,6 +566,14 @@ export default class {
         if (!size)
           size = 8
         out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10, true) + '</span>'
+        reverse = false
+        reverseBytes = false
+        invert = false
+        consumed = true
+      } else if (f == 'f') {
+        if (!size)
+          size = 32
+        out += '<span class="dec">' + formatBitsFloat(shiftBits(bits, size, reverse, reverseBytes, invert)) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false

@@ -118,6 +118,7 @@
       <b>b</b> binary (1 bit)
       <b>d</b> decimal (8 bits)
       <b>s</b> signed decimal (8 bits)
+      <b>f</b> float (32 bits)
       <b>c</b> ascii character (8 bits)
       <b>x</b> skip (1 bit)
       <br>
