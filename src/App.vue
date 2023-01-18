@@ -2,9 +2,9 @@
   <div id="app" :class="{dark: isDark}">
     <button class="left" @click="verbose = !verbose">Toggle Help</button>
     <button class="right" @click="isDark = !isDark">Dark Mode / Light Mode</button>
-    <a class="right" href="https://github.com/zuckschwerdt/bitbench">Github comments and code welcome</a>
-    <h1>Welcome to BitBench</h1>
-    <p class="tagline">Visually dissect and analyze bit strings.</p>
+    <a class="right dense" href="https://github.com/zuckschwerdt/bitbench">Github comments and code welcome</a>
+    <h1 :class="{ dense: !verbose }">Welcome to BitBench</h1>
+    <p :class="{ dense: !verbose }" class="tagline">Visually dissect and analyze bit strings.</p>
     <BitBench :verbose="verbose"/>
   </div>
 </template>
@@ -50,6 +50,15 @@ h1 {
 }
 .tagline {
   margin: 0 0 .5em 0;
+}
+a.dense,
+h1.dense,
+.tagline.dense {
+  display: inline-block;
+  margin: 0;
+  padding: 0 0.5em;
+  font-size: 1em;
+  line-height: 2;
 }
 .left {
   float: left;
