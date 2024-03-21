@@ -29,6 +29,7 @@ const props = defineProps({
   code: String,
   bits: Object,
   fmts: String,
+  zeroFill: Boolean,
   calcFunc: String,
   calcOffset: Number,
   calcLength: Number,
@@ -54,7 +55,7 @@ const bitsText = computed(() =>
       .invert(invert.value)
       .padLeft(padLeft.value)
       .padRight(padRight.value)
-      .toFormat(fmt)
+      .toFormat(fmt, { zeroFill: props.zeroFill })
     )
 )
 

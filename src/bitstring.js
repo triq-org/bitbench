@@ -36,8 +36,15 @@ function trimBitsLeft(bits, size) {
     bits.unshift(0)
 }
 
-function shiftBits(bits, size = 1, reverse = false, reverseBytes = false, invert = false) {
+function shiftBits(bits, size = 1, reverse = false, reverseBytes = false, invert = false, zeroFill = false) {
   var b = bits.slice(0, size)
+  b.truncated = (b.length != size)
+  b.classes = b.truncated ? ' truncated' : ''
+  if (b.truncated && zeroFill) {
+    trimBitsRight(b, size)
+    b.zeroFill = true
+    b.classes = ' zerofill'
+  }
   if (reverse)
     b = b.reverse()
   if (reverseBytes)
@@ -489,7 +496,8 @@ export default class {
     return this.toFormat('8h ')
   }
 
-  toFormat(fmt) {
+  toFormat(fmt, options = {}) {
+    const zeroFill = options.zeroFill
     var out = ''
     var bits = this.bits.slice()
     var fmts = fmt.split('')
@@ -549,7 +557,8 @@ export default class {
       } else if (f == 'h') {
         if (!size)
           size = 4
-        out += '<span class="hex">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 16) + '</span>'
+        const b = shiftBits(bits, size, reverse, reverseBytes, invert, zeroFill)
+        out += '<span class="hex' + b.classes + '">' + formatBits(b, 16) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false
@@ -557,7 +566,8 @@ export default class {
       } else if (f == 'd') {
         if (!size)
           size = 8
-        out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10, false) + '</span>'
+        const b = shiftBits(bits, size, reverse, reverseBytes, invert, zeroFill)
+        out += '<span class="dec' + b.classes + '">' + formatBits(b, 10, false) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false
@@ -565,7 +575,8 @@ export default class {
       } else if (f == 's') {
         if (!size)
           size = 8
-        out += '<span class="dec">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 10, true) + '</span>'
+        const b = shiftBits(bits, size, reverse, reverseBytes, invert, zeroFill)
+        out += '<span class="dec' + b.classes + '">' + formatBits(b, 10, true) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false
@@ -573,7 +584,8 @@ export default class {
       } else if (f == 'f') {
         if (!size)
           size = 32
-        out += '<span class="dec">' + formatBitsFloat(shiftBits(bits, size, reverse, reverseBytes, invert)) + '</span>'
+        const b = shiftBits(bits, size, reverse, reverseBytes, invert, zeroFill)
+        out += '<span class="dec' + b.classes + '">' + formatBitsFloat(b) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false
@@ -581,7 +593,8 @@ export default class {
       } else if (f == 'c') {
         if (!size)
           size = 8
-        out += '<span class="chr">' + formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 256) + '</span>'
+        const b = shiftBits(bits, size, reverse, reverseBytes, invert, zeroFill)
+        out += '<span class="chr' + b.classes + '">' + formatBits(b, 256) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false
@@ -589,7 +602,8 @@ export default class {
       } else if (f == 'r') {
         if (!size)
           size = 4
-        out += '<span class="hex">' + trChars(formatBits(shiftBits(bits, size, reverse, reverseBytes, invert), 16)) + '</span>'
+        const b = shiftBits(bits, size, reverse, reverseBytes, invert, zeroFill)
+        out += '<span class="hex' + b.classes + '">' + trChars(formatBits(b, 16)) + '</span>'
         reverse = false
         reverseBytes = false
         invert = false

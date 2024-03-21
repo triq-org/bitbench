@@ -24,8 +24,13 @@
       <span class="v-space"></span>
       <button @click="showAlign = !showAlign" :class="{'active': showAlign}"><span>Show</span></button>
       <span class="v-space"></span>
+      Zero-fill
+      <button @click="zeroFill = !zeroFill" :class="{'active': zeroFill}"
+        :title="zeroFill ? 'Partial numbes will be zero-filled / padded right' : 'Partial numbers will be truncated / padded left'"><span>Z</span></button>
+      <span class="v-space"></span>
       Comments
-      <button @click="comments = !comments" :class="{'active': comments}"><span>C</span></button>
+      <button @click="comments = !comments" :class="{'active': comments}"
+        title="Show comments on decoded lines"><span>C</span></button>
     </p>
     <div v-if="align && showAlign" class="code-lines">
       <BitBox v-for="(code, index) in codesWithAlign" :key="code.index"
@@ -157,7 +162,7 @@
     <div class="code-lines">
       <BitBox v-for="(code, index) in codesWithCoding" :key="code.index"
         :class="{'cursor': index === cursor, 'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
-        :bits="code.bits" :fmts="fmts" :comments="comments"
+        :bits="code.bits" :fmts="fmts" :zeroFill="zeroFill" :comments="comments"
         :calcFunc="calcFunc" :calcOffset="calcOffset" :calcLength="calcLength" :calcWidth="calcWidth" :calcShow="calcShow"
       />
     </div>
@@ -201,6 +206,7 @@ const calcLength = ref(0)
 const calcWidth = ref(4)
 const calcShow = ref(16)
 const fmts = ref('hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ')
+const zeroFill = ref(true)
 const comments = ref(true)
 const cursor = ref(-1)
 const helpFormat = ref(false)
@@ -210,6 +216,7 @@ let uri = window.location.search.substring(1) || window.location.hash.substring(
 let params = new URLSearchParams(uri);
 let paramCodes = params.getAll('c').join('\n')
 let paramFmt = params.get('f')
+let paramZeroFill = params.get('z')
 let paramAlign = params.get('a')
 let paramMatch = params.get('m')
 let paramShift = params.get('s')
@@ -226,6 +233,8 @@ if (paramCodes)
   codes.value = paramCodes
 if (paramFmt)
   fmts.value = paramFmt
+if (paramZeroFill)
+  zeroFill.value = true
 if (paramAlign)
   align.value = paramAlign
 if (paramMatch)
@@ -305,6 +314,7 @@ const url = computed(() => {
       .map((el) => 'c=' + encodeURIComponent(el) )
       .join('&') +
     '&f=' + encodeURIComponent(fmts.value) +
+    (zeroFill.value ? '&z=1' : '') +
     (align.value ? '&a=' + encodeURIComponent(align.value) : '') +
     (align.value ? '&m=' + encodeURIComponent(match.value) : '') +
     (shift.value ? '&s=' + encodeURIComponent(shift.value) : '') +
@@ -512,6 +522,12 @@ input.vanish {
 .bits b {
   color:#0a0;
   background: #cfc;
+}
+.bits .truncated {
+  border-left: 6px solid #f44;
+}
+.bits .zerofill {
+  border-right: 6px solid #f44;
 }
 .bits .hex {
   color: #444;
