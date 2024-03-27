@@ -38,12 +38,11 @@ function trimBitsLeft(bits, size) {
 
 function shiftBits(bits, size = 1, reverse = false, reverseBytes = false, invert = false, zeroFill = false) {
   var b = bits.slice(0, size)
-  b.truncated = (b.length != size)
-  b.classes = b.truncated ? ' truncated' : ''
-  if (b.truncated && zeroFill) {
+  const truncated = (b.length != size)
+  let classes = truncated ? ' truncated' : ''
+  if (truncated && zeroFill) {
     trimBitsRight(b, size)
-    b.zeroFill = true
-    b.classes = ' zerofill'
+    classes = ' zerofill'
   }
   if (reverse)
     b = b.reverse()
@@ -59,6 +58,11 @@ function shiftBits(bits, size = 1, reverse = false, reverseBytes = false, invert
       b[i] = !b[i]
   for (; size > 0; --size)
     bits.shift()
+
+  b.truncated = truncated
+  b.classes = classes
+  b.zeroFill = truncated && zeroFill
+
   return b
 }
 
