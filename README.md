@@ -8,22 +8,19 @@ There is a hosted instance on http://triq.net/bitbench
 
 ## Status
 
-This is a quick 1-day proof-of-concept.
+This was a quick 1-day proof-of-concept but quickly got refined to a stable product.
 [Comments](/zuckschwerdt/bitbench/issues) and [Code](/zuckschwerdt/bitbench/pulls) very much welcome.
 
 ## Development
 
 - Project setup
-  `yarn install`
+  `npm install`
 
 - Compiles and hot-reloads for development
-  `yarn run dev`
+  `npm run dev`
 
 - Compiles and minifies for production
-  `yarn run build`
-
-- Run your tests
-  `yarn run test`
+  `npm run build`
 
 - Lints and fixes files
-  `yarn run lint`
+  `npm run lint`
