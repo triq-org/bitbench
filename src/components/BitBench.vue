@@ -3,13 +3,13 @@
   <section class="bench">
     <p v-if="verbose">
       Enter hex code lines to analyze.
-      Prefix 0<b>y</b> for <b>dual</b>,
-      0<b>z</b> for <b>decimal</b>,
-      0<b>x</b> for <b>hex</b>,
-      0<b>o</b> for <b>octal</b>,
-      0<b>t</b> for <b>ternary</b> (0,1,Z,X).<br/>
-      Specify a bit length with <b>{</b>…<b>}</b> prefix (pad/truncate right, left for decimal),
-      text in <b>[</b>…<b>]</b> brackets is ignored as comment.
+      Prefix <code class="codes">y</code> for <b>dual</b>,
+      <code class="codes">z</code> for <b>decimal</b>,
+      <code class="codes">x</code> for <b>hex</b>,
+      <code class="codes">o</code> for <b>octal</b>,
+      <code class="codes">t</code> for <b>ternary</b> (0,1,Z,X).<br/>
+      Specify a bit length with <code class="codes">{</code>…<code class="codes">}</code> prefix (pad/truncate right, left for decimal),
+      text in <code class="codes">[</code>…<code class="codes">]</code> brackets is ignored as comment.
     </p>
     <textarea class="codes" v-model="codes" @keyup="textareaSelect" @mouseup="textareaSelect" placeholder="add lines of hex, [comments], y z x o t to switch base"></textarea>
   </section>
@@ -78,7 +78,7 @@
       <span class="v-space"></span>
       <button @click="showCoding = !showCoding" :class="{'active': showCoding}"><span>Show</span></button>
     </p>
-    <div v-if="coding && showCoding" class="code-lines">
+    <div v-if="(coding || xor2) && showCoding" class="code-lines">
       <BitBox v-for="(code, index) in codesWithCoding" :key="code.index"
         :class="{'cursor': index === cursor, 'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
         :bits="code.bits" fmts="8h " :comments="comments"/>
@@ -119,38 +119,40 @@
   <section class="bench">
     <p v-if="verbose">
       Enter format string (each line is one decode).
-      <b>h</b> hex (4 bits)
-      <b>b</b> binary (1 bit)
-      <b>d</b> decimal (8 bits)
-      <b>s</b> signed decimal (8 bits)
-      <b>f</b> float (32 bits)
-      <b>c</b> ascii character (8 bits)
-      <b>x</b> skip (1 bit)
+      <code>h</code> hex (4 bits)
+      <code>b</code> binary (1 bit)
+      <code>d</code> decimal (8 bits)
+      <code>s</code> signed decimal (8 bits)
+      <code>f</code> float (32 bits)
+      <code>c</code> ascii character (8 bits)
+      <code>x</code> skip (1 bit)
       <br>
       Use optional bit length prefix numbers.
-      Use "<b>~</b>" to invert bits, use "<b>^</b>" to reverse LSB/MSB, use "<b>&gt;</b>" and "<b>&lt;</b>" to<br/>
+      Use "<code>~</code>" to invert bits, use "<code>^</code>" to reverse LSB/MSB, use "<code>&gt;</code>" and "<code>&lt;</code>" to<br/>
       interpret multi-byte values as big-endian (default) or little-endian.
       Other characters are output as-is.
       <a href="#" @click.prevent="helpFormat = !helpFormat">Help</a>,
       <a href="#" @click.prevent="helpExamples = !helpExamples">Examples</a>.
     </p>
-    <p v-if="helpFormat">
+    <div v-if="helpFormat">
       <ul>
-        <li>"<b>h</b>" for hex (default 4 bits)</li>
-        <li>"<b>b</b>" for binary (default 1 bit)</li>
-        <li>"<b>d</b>" for decimal (default 8 bits)</li>
-        <li>"<b>c</b>" for ascii character (default 8 bits)</li>
-        <li>"<b>x</b>" for don&apos;t care / don&apos;t output (default 1 bit)</li>
+        <li>"<code>h</code>" for hex (default 4 bits)</li>
+        <li>"<code>b</code>" for binary (default 1 bit)</li>
+        <li>"<code>d</code>" for decimal (default 8 bits)</li>
+        <li>"<code>c</code>" for ascii character (default 8 bits)</li>
+        <li>"<code>x</code>" for don&apos;t care / don&apos;t output (default 1 bit)</li>
       </ul>
-    </p>
-    <ul v-if="helpExamples">
-      <li>E.g. <a @click="setFormat('hh ')">"hh "</a> or <a @click="setFormat('8h ')">"8h "</a> for byte-grouped hex output.</li>
-      <li><a @click="setFormat('hhhh ')">"hhhh "</a> or <a @click="setFormat('16h ')">"16h "</a> for word-grouped hex output.</li>
-      <li><a @click="setFormat('b')">"b"</a> for ungrouped binary output.</li>
-      <li><a @click="setFormat('4b 4b | ')">"4b 4b | "</a> for nibble and byte-grouped binary output.</li>
-      <li><a @click="setFormat('8b \n..... 8h \n.... 8d ')">"8b \n 8h \n 8d "</a> for bit, hex, and dec outputs.</li>
-      <li><a @click="setFormat('hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ')">"hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h "</a> e.g. for the example data.</li>
-    </ul>
+    </div>
+    <div v-if="helpExamples">
+      <ul>
+        <li>E.g. <a @click="setFormat('hh ')">"<code>hh </code>"</a> or <a @click="setFormat('8h ')">"<code>8h </code>"</a> for byte-grouped hex output.</li>
+        <li><a @click="setFormat('hhhh ')">"<code>hhhh </code>"</a> or <a @click="setFormat('16h ')">"<code>16h </code>"</a> for word-grouped hex output.</li>
+        <li><a @click="setFormat('b')">"<code>b</code>"</a> for ungrouped binary output.</li>
+        <li><a @click="setFormat('4b 4b | ')">"<code>4b 4b | </code>"</a> for nibble and byte-grouped binary output.</li>
+        <li><a @click="setFormat('8b \n..... 8h \n.... 8d ')">"<code>8b \n 8h \n 8d </code>"</a> for bit, hex, and dec outputs.</li>
+        <li><a @click="setFormat('hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h ')">"<code>hh ID:hh b CH3d TEMP_C:12d HUM:d CRC:8h | 8h 16h 16h </code>"</a> e.g. for the example data.</li>
+      </ul>
+    </div>
     <textarea class="fmts" v-model="fmts" placeholder="enter format lines"></textarea>
     <div>
       <a :href="url" @click.prevent="copyUrl">Link to this data and format</a>
@@ -376,9 +378,9 @@ function copyUrl(event) {
 .bench > div, .bench > p, .bench ul {
  text-align: left;
 }
-textarea, input, .bits {
+textarea, input, .bits, code {
   font-family: monospace;
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 textarea {
   width: 100%;
@@ -387,11 +389,17 @@ textarea {
   border-bottom: 1px solid #DDD;
   box-shadow: inset 0 1px 2px rgba(0,0,0,.39), 0 -1px 1px rgba(255,255,255,0.5), 0 1px 0 rgba(255,255,255,0.5);
   padding: 1em 2em;
+}
+textarea, code {
   color: #44f;
 }
 .dark textarea {
   border-bottom: none;
   box-shadow: inset 0 1px 2px rgba(0,0,0,0.2), 0 -1px 1px rgba(0,0,0,0.1), 0 1px 0 rgba(0,0,0,0.5);
+}
+code {
+  background: rgba(0,0,0,0.02);
+  padding: 0 .25em;
 }
 
 input.perfect-inset {
@@ -410,7 +418,7 @@ textarea.codes {
 textarea.fmts {
   height: 100px;
 }
-.dark textarea, .dark input[type=text] {
+.dark textarea, .dark input[type=text], .dark code {
   border: none;
   color: #9b4;
   background: #222;
