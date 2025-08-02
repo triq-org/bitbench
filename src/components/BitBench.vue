@@ -73,12 +73,14 @@
       <button @click="toggleCoding('MCI')" :class="{'active': coding=='MCI'}"><span>Manchester (IEEE 802.3)</span></button>
       <button @click="toggleCoding('DMC')" :class="{'active': coding=='DMC'}"><span>Differential Manchester</span></button>
       <span class="v-space"></span>
-      Xor
-      <input type="text" size="4" v-model="xor2">
+      Whitening
+      <input type="text" size="4" v-model="whitening">
+      <button @click="whitening=IbmWhitening" :class="{'active': whitening==IbmWhitening}"><span>IBM</span></button>
+      <button @click="whitening=CcittWhitening" :class="{'active': whitening==CcittWhitening}"><span>CCITT</span></button>
       <span class="v-space"></span>
       <button @click="showCoding = !showCoding" :class="{'active': showCoding}"><span>Show</span></button>
     </p>
-    <div v-if="(coding || xor2) && showCoding" class="code-lines">
+    <div v-if="(coding || whitening) && showCoding" class="code-lines">
       <BitBox v-for="(code, index) in codesWithCoding" :key="code.index"
         :class="{'cursor': index === cursor, 'even': index % 2 === 0, 'odd': index % 2 !== 0 }"
         :bits="code.bits" fmts="8h " :comments="comments"/>
@@ -182,6 +184,12 @@ defineProps({
   verbose: Boolean,
 })
 
+// The IBM whitening algorithm is used by CC1101 chips and chip families.
+const IbmWhitening = 'ffe11d9aed853324ea7ad2397097570a547d2dd86d0dba8f6759c7a2bf34ca18305393df92eca7158adcf486554e182140c4c4d5c6918acde7d14e093217df83';
+
+// The CCITT whitening algorithm is used by RF69 (RFM69, SX1231) chips and chip families.
+const CcittWhitening = 'ff87b859b7a1cc24575e4b9c0ee9ea502abeb41bb6b05df1e69ae345fd2c53180ccac9fb4937e5a8513b2f61aa721884022323ab638951b3e78b72904ce8fbc1';
+
 const codes = ref(`30 c3 81 d5 5c 2a cf 08 35 44 2c
 30 35 c2 2f 3c 0f a1 07 52 29 9f
 30 35 c2 2e 3c fb 8c 07 52 29 9f
@@ -200,7 +208,7 @@ const xor = ref('')
 const reflect = ref(false)
 const showShift = ref(false)
 const coding = ref(false)
-const xor2 = ref('')
+const whitening = ref('')
 const showCoding = ref(false)
 const calcFunc = ref('')
 const calcOffset = ref(0)
@@ -226,7 +234,7 @@ let paramInvert = params.get('i')
 let paramXor = params.get('x')
 let paramReflect = params.get('r')
 let paramCoding = params.get('d')
-let paramXor2 = params.get('x2')
+let paramWhitening = params.get('x2')
 let paramCalcFunc = params.get('cf')
 let paramCalcOffset = params.get('co')
 let paramCalcLength = params.get('cl')
@@ -251,8 +259,8 @@ if (paramReflect)
   reflect.value = paramReflect
 if (paramCoding)
   coding.value = paramCoding
-if (paramXor2)
-  xor2.value = paramXor2
+if (paramWhitening)
+  whitening.value = paramWhitening
 if (paramCalcFunc)
   calcFunc.value = paramCalcFunc
 if (paramCalcOffset)
@@ -296,16 +304,16 @@ const codesWithCoding = computed(() => {
   const codes = codesWithShiftInvert.value
   if (coding.value == 'MC') {
     return codes
-      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMC().xor(xor2.value)} })
+      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMC().xor(whitening.value)} })
   } else if (coding.value == 'MCI') {
     return codes
-      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMCI().xor(xor2.value)} })
+      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeMCI().xor(whitening.value)} })
   } else if (coding.value == 'DMC') {
     return codes
-      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeDMC().xor(xor2.value)} })
+      .map((el, index) => { return {index: index, bits: el.bits.copy().decodeDMC().xor(whitening.value)} })
   } else {
     return codes
-      .map((el, index) => { return {index: index, bits: el.bits.copy().xor(xor2.value)} })
+      .map((el, index) => { return {index: index, bits: el.bits.copy().xor(whitening.value)} })
   }
 })
 
@@ -324,7 +332,7 @@ const url = computed(() => {
     (xor.value ? '&x=' + encodeURIComponent(xor.value) : '') +
     (reflect.value ? '&r=' + encodeURIComponent(reflect.value) : '') +
     (coding.value ? '&d=' + encodeURIComponent(coding.value) : '') +
-    (xor2.value ? '&x2=' + encodeURIComponent(xor2.value) : '') +
+    (whitening.value ? '&x2=' + encodeURIComponent(whitening.value) : '') +
     (calcFunc.value ? '&cf=' + encodeURIComponent(calcFunc.value) : '') +
     (calcOffset.value ? '&co=' + encodeURIComponent(calcOffset.value) : '') +
     (calcLength.value ? '&cl=' + encodeURIComponent(calcLength.value) : '') +
