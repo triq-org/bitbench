@@ -318,7 +318,8 @@ const codesWithCoding = computed(() => {
 })
 
 const url = computed(() => {
-  const u = new URL(window.location)
+  // clear port and search from base url
+  const u = new URL('https://' + window.location.hostname + window.location.pathname)
   u.hash = '#' +
     codes.value.trim().split('\n')
       .map((el) => 'c=' + encodeURIComponent(el) )
